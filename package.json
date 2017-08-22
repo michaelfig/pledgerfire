@@ -8,8 +8,11 @@
     "react-dom": "^15.6.1",
     "react-scripts": "1.0.11"
   },
+  "proxy": {
+      "/__/(.*)": {"target": "http://localhost:8081"}
+  },
   "scripts": {
-    "start": "PORT=8080 react-scripts start",
+    "start": "{ firebase serve -p 8081 &}; PORT=8080 react-scripts start; kill %1",
     "deploy": "firebase deploy",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
