@@ -4,17 +4,20 @@
   "private": true,
   "homepage": ".",
   "dependencies": {
+    "firebase": "^4.3.0",
+    "firebase-tools": "^3.9.2",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
-    "react-scripts": "1.0.11"
-  },
-  "proxy": {
-      "/__/(.*)": {"target": "http://localhost:8081"}
+    "react-inline-css": "^2.3.1",
+    "react-redux": "^5.0.6",
+    "react-redux-firebase": "^2.0.0-beta.7",
+    "react-scripts": "1.0.11",
+    "redux": "^3.7.2"
   },
   "scripts": {
-    "start": "{ firebase serve -p 8081 &}; PORT=8080 react-scripts start; kill %1",
-    "deploy": "firebase deploy",
-    "build": "react-scripts build",
+    "start": "node fbconfig.js && PORT=8080 react-scripts start",
+    "deploy": "node fbconfig.js && firebase deploy",
+    "build": "node fbconfig.js && react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   }
