@@ -1,6 +1,6 @@
 {
   "name": "pledgerfire",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "homepage": ".",
   "dependencies": {
@@ -16,7 +16,7 @@
   },
   "scripts": {
     "start": "node fbconfig.js && PORT=8080 react-scripts start",
-    "deploy": "node fbconfig.js && firebase deploy",
+    "deploy": "firebase deploy",
     "build": "node fbconfig.js && react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
