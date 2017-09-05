@@ -4,7 +4,7 @@
 
 .App-logo {
   height: 80px;
-  /*animation: App-logo-spin infinite 20s linear;*/
+  animation: App-logo-wobble infinite 20s linear;
 }
   
 .App-header {
@@ -18,7 +18,9 @@
   font-size: large;
 }
 
-@keyframes App-logo-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+@keyframes App-logo-wobble {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(30deg); }
+  75% { transform: rotate(-30deg); }
+  100% { transform: rotate(0deg); }
 }
