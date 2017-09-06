@@ -11,7 +11,11 @@ class App extends Component {
     static propTypes = {
 	auth: PropTypes.object
     }
-    
+
+    logoClick(event) {
+        window.location.reload(true);
+    }
+
     render() {
 	const { auth } = this.props
 	const LoginState = (!isLoaded(auth) || isEmpty(auth)) ?
@@ -22,7 +26,7 @@ class App extends Component {
 	return (
       <div className="App">
         <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
+          <img src={logo} className="App-logo" alt="logo" onClick={this.logoClick}/>
           <h2>Welcome to Pledger</h2>
         </div>
         <p className="App-intro">
