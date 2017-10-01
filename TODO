@@ -1,0 +1,51 @@
+Presentational Components:
+
+* TrackingGroupList
+  - groups: { id, text, trackers } shape
+  - onGroupClick(id: number)
+
+* Tracker
+  - id: number
+  - title: string
+  - pendings: { unit, pending, base, goal } shape
+  - categories: { id, amt }
+  - onGoalClick(id: number)
+  - onCounterClick(id: number)
+
+* Pending
+  wires up the TimePending with now from Redux
+  - unit: string
+  - pending: any
+  - base: number
+  - goal: number
+
+* TimePending
+  - now: Date
+  - start: Date | null
+  - base: number
+  - goal: number
+
+* TimeGoal
+  - pending: number
+  - base: number
+  - goal: number
+  - onClick()
+
+* TimeCounter
+  - pending: number
+  - onClick()
+
+Container Components:
+
+Ticker
+  - default offsetms = 0
+  - takes firebase.database().ref('.info/serverTimeOffset').on('value', snap => { offsetms = snap.val() })
+  - updates state.now to new Date(new Date().getTime() + offsetms)
+
+UserTrackingGroupList
+  - auth
+
+VisiblePending
+  - tracker: id
+  - unit: string
+  - onClick

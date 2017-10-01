@@ -1,6 +1,8 @@
 import { createStore, combineReducers, compose } from 'redux'
 import { reactReduxFirebase, firebaseStateReducer } from 'react-redux-firebase'
-import * as firebase from 'firebase'
+import firebase from 'firebase/app'
+import 'firebase/database'
+import 'firebase/auth'
 import * as fbConfig from './firebase.json'
 
 const rootReducer = combineReducers({
