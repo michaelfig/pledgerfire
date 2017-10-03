@@ -5,8 +5,19 @@ import 'firebase/database'
 import 'firebase/auth'
 import * as fbConfig from './firebase.json'
 
+const nowReducer = (state, action) => {
+    switch (action.type) {
+    case 'TICKER_SET_NOW':
+	return action.now
+
+    default:
+	return state === undefined ? null : state
+    }
+}
+
 const rootReducer = combineReducers({
-    firebase: firebaseStateReducer
+    firebase: firebaseStateReducer,
+    now: nowReducer,
 })
 
 const firebaseApp = firebase.initializeApp(fbConfig)

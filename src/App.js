@@ -7,8 +7,11 @@ import { connect, Provider } from 'react-redux'
 import { firebaseConnect, isLoaded, isEmpty } from 'react-redux-firebase'
 
 import store from './store'
+import Ticker from './Ticker'
 
 const BIRTHDAY = new Date('1975-09-16 06:12 MST-0700')
+const WORK_START = new Date()
+WORK_START.setHours(9,0,0,0)
 
 class App extends Component {
     static propTypes = {
@@ -31,21 +34,17 @@ class App extends Component {
 			     }
 			 ]
 			},
-			{id: 2, title:'Personal',
+			{id: 0, title:'Ungrouped',
 			 trackers:[
 			     {id: 2,
 			      title: 'Work',
 			      pendings: [
-				  {id: 2, unit:'s', pending:(new Date(122)), base:0, goal:0}
+				  {id: 2, unit:'s', pending:WORK_START, base:0, goal:0}
 			      ],
 			      categories: [
 				  {id: 3, name: 'self/work'},
 			      ]
-			     }
-			 ]
-			},
-			{id: 3, title:'Life',
-			 trackers:[
+			     },
 			     {id: 3,
 			      title: 'Since birth',
 			      pendings: [
@@ -83,6 +82,8 @@ const ConnectedApp = firebaseConnect()(connect(
 
 export default () => (
 	<Provider store={store}>
+	<Ticker>
 	<ConnectedApp />
+	</Ticker>
 	</Provider>
 )

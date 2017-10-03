@@ -11,6 +11,8 @@ class TimeGoal extends TimeCounter {
 
     render() {
 	const {pending, base, goal} = this.props
+	if (goal === 0)
+	    return ''
 	const elapsed = goal - (base + pending)
 	return <span>[{this.getElapsed(elapsed)}]</span>
     }
