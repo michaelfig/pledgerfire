@@ -19,6 +19,11 @@
   font-size: large;
 }
 
+.App-body {
+    padding: 10px;
+    text-align: left;
+}
+
 @keyframes App-logo-wobble {
   0% { transform: rotate(0deg); }
   25% { transform: rotate(30deg); }

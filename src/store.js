@@ -15,9 +15,20 @@ const nowReducer = (state, action) => {
     }
 }
 
+const visibleGroupReducer = (state, action) => {
+    switch (action.type) {
+    case 'VISIBLE_GROUP_SET':
+	return action.group
+
+    default:
+	return state === undefined ? 0 : state
+    }
+}
+
 const rootReducer = combineReducers({
     firebase: firebaseStateReducer,
     now: nowReducer,
+    visibleGroup: visibleGroupReducer,
 })
 
 const firebaseApp = firebase.initializeApp(fbConfig)

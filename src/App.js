@@ -5,11 +5,14 @@ import './App.css';
 import TrackingGroupList from './TrackingGroupList'
 import { connect, Provider } from 'react-redux'
 import { firebaseConnect, isLoaded, isEmpty } from 'react-redux-firebase'
+import './react-toolbox/theme.css'
+import theme from './react-toolbox/theme'
+import ThemeProvider from 'react-toolbox/lib/ThemeProvider'
 
 import store from './store'
 import Ticker from './Ticker'
 
-const BIRTHDAY = new Date('1975-09-16 06:12 MST-0700')
+const BIRTHDAY = new Date(1975, 8, 16, 6, 12, 0)
 const WORK_START = new Date()
 WORK_START.setHours(9,0,0,0)
 
@@ -59,7 +62,7 @@ class App extends Component {
 		       ]
 	const GroupList = (!isLoaded(auth) || isEmpty(auth)) ?
 	      <p>Logging in...</p> :
-	      <TrackingGroupList groups={groups} />
+	      <div className='App-body'><TrackingGroupList groups={groups} /></div>
 				       
 	return (
       <div className="App">
@@ -82,8 +85,10 @@ const ConnectedApp = firebaseConnect()(connect(
 
 export default () => (
 	<Provider store={store}>
+	<ThemeProvider theme={theme}>
 	<Ticker>
 	<ConnectedApp />
 	</Ticker>
+	</ThemeProvider>
 	</Provider>
 )

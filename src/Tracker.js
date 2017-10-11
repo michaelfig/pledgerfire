@@ -3,6 +3,9 @@ import PropTypes from 'prop-types'
 import Pending from './Pending'
 import Categories from './Categories'
 
+import Card from 'react-toolbox/lib/card/Card'
+import CardTitle from 'react-toolbox/lib/card/CardTitle'
+import CardText from 'react-toolbox/lib/card/CardText'
 
 class Tracker extends Component {
     static propTypes = {
@@ -20,10 +23,11 @@ class Tracker extends Component {
 	    Pendings.push(<Pending key={pending.id} {...pending} />)
 	}
 	return (
-		<div id={id}>
-		{Pendings} {title}<br />
-		<Categories cats={categories} />
-	        </div>
+		<Card>
+		<CardTitle title={title}/>
+		<CardText>{Pendings}<br />
+		<Categories cats={categories} /></CardText>
+		</Card>
 	)
     }
 }

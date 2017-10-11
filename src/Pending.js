@@ -12,9 +12,12 @@ class Pending extends Component {
     render() {
 	const {id, unit, pending, base, goal} = this.props
 	if (unit === 's') {
-	    const childProps = {id,
-				start: pending ? Math.floor(pending.getTime() / 1000) : null,
-				base, goal}
+	    const childProps = {
+		id,
+		start: pending ? Math.floor(pending.getTime() / 1000) : null,
+		base,
+		goal
+	    }
 	    return <TimePending {...childProps} />
 	}
 	else {

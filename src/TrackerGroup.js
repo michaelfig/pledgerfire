@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import Tracker from './Tracker'
 
-
 class TrackerGroup extends Component {
     static propTypes = {
 	id: PropTypes.number.isRequired,
@@ -15,14 +14,9 @@ class TrackerGroup extends Component {
 	var Trackers = []
 	
 	for (const tracker of trackers) {
-	    Trackers.push(<dd key={tracker.id}>
-			  <Tracker {...tracker} />
-			  </dd>)
+	    Trackers.push(<Tracker key={tracker.id} {...tracker} />)
 	}
-	return [
-		<dt key="top" id={id}>{title}</dt>,
-		...Trackers
-	]
+	return Trackers
     }
 }
 

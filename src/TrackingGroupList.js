@@ -1,7 +1,10 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import './TrackingGroupList.css'
+import {connect} from 'react-redux'
+
 import TrackerGroup from './TrackerGroup'
+import Tab from 'react-toolbox/lib/tabs/Tab'
+import Tabs from 'react-toolbox/lib/tabs/Tabs'
 
 
 class TrackingGroupList extends Component {
@@ -10,19 +13,21 @@ class TrackingGroupList extends Component {
     }
 
     render() {
-	const {groups} = this.props
+	const {groups, visibleGroup, dispatch} = this.props
 	var Groups = []
 	for (const group of groups) {
-	    Groups.push(<TrackerGroup key={group.id} id={group.id}
-			title={group.title} trackers={group.trackers} />)
+	    Groups.push(<Tab key={group.id} label={group.title}><TrackerGroup
+			trackers={group.trackers} /></Tab>
+		       )
 	}
 
 	return (
-		<dl className="TrackingGroupList">
+		<Tabs index={visibleGroup}
+	    onChange={(index) => dispatch({type: 'VISIBLE_GROUP_SET', group: index })}>
 		{Groups}
-		</dl>
+		</Tabs>
 	)
     }
 }
 
-export default TrackingGroupList
+export default connect(({visibleGroup}) => ({visibleGroup}))(TrackingGroupList)

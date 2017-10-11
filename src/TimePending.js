@@ -22,5 +22,5 @@ class TimePending extends Component {
     }
 }
 
-const ConnectedTimePending = connect(({now}) => ({now: now}))(TimePending)
+const ConnectedTimePending = connect(({now}) => ({now}))(TimePending)
 export default ConnectedTimePending

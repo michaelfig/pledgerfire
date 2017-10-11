@@ -35,7 +35,7 @@ class Ticker extends Component {
 	    const offsetRef = this.props.firebase.ref('.info/serverTimeOffset')
 	    offsetRef.on('value', (snap) => {
 		globalOffset = snap.val()
-		console.log('set globalOffset to ', globalOffset)
+		//console.log('set globalOffset to ', globalOffset)
 	    })
 	    this.tick()
 	    globalTicker = setInterval(this.tick.bind(this),

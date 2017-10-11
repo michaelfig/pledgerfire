@@ -19,6 +19,20 @@
     "deploy": "firebase deploy",
     "build": "node fbconfig.js && react-scripts build",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+      "toolbox": "react-toolbox-themr"
+  },
+  "devDependencies": {
+    "react-toolbox": "^2.0.0-beta.12",
+    "react-toolbox-themr": "^1.0.2"
+  },
+  "reactToolbox": {
+      "include": [
+	  "MENU",
+	  "CHIP",
+	  "CARD",
+	  "TABS"
+      ],
+      "output": "src/react-toolbox"
   }
 }
