@@ -1,4 +1,3 @@
-import React from 'react'
 import PropTypes from 'prop-types'
 import TimeCounter from './TimeCounter'
 
@@ -13,9 +12,7 @@ class TimeGoal extends TimeCounter {
     render() {
 	const {pending, base, goal} = this.props
 	const elapsed = goal - (base + pending)
-	return (
-		<span>[{this.getElapsed(elapsed)}]</span>
-	)
+	return `[${this.getElapsed(elapsed)}]`
     }
 }
 

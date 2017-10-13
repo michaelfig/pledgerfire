@@ -4,19 +4,19 @@ import TimePending from './TimePending'
 
 class Pending extends Component {
     static propTypes = {
+	id: PropTypes.number.isRequired,
 	unit: PropTypes.string.isRequired,
 	base: PropTypes.number.isRequired,
-	goal: PropTypes.number.isRequired
+	goal: PropTypes.number.isRequired,
+	pending: PropTypes.number.isRequired,
     }
 
     render() {
-	const {id, unit, pending, base, goal} = this.props
+	const { unit } = this.props
 	if (unit === 's') {
 	    const childProps = {
-		id,
-		start: pending ? Math.floor(pending.getTime() / 1000) : null,
-		base,
-		goal
+		...this.props,
+		start: this.props.timer !== null ? Math.floor(this.props.timer.getTime() / 1000) : null,
 	    }
 	    return <TimePending {...childProps} />
 	}

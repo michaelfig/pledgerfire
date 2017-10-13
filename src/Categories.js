@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
 import Chip from 'react-toolbox/lib/chip/Chip'
+import FontIcon from 'react-toolbox/lib/font_icon'
 
 
 class Categories extends Component {
@@ -9,16 +10,17 @@ class Categories extends Component {
 	cats: PropTypes.array.isRequired,
 	onClick: PropTypes.func.isRequired,
 	onDeleteClick: PropTypes.func.isRequired,
+	editable: PropTypes.bool,
     }
 
 
     render() {
-	const {cats, onDeleteClick, onClick} = this.props
-	var Cats = []
+	const {cats, onDeleteClick, onClick, editable} = this.props
+	var Cats = editable ? [<FontIcon key={-1}>add_circle_outline</FontIcon>] : []
 	
-	for (const cat of cats) {
-	    let i = Cats.length
-	    Cats.push(<Chip key={cat.id} deletable
+	for (const i in cats) {
+	    const cat = cats[i]
+	    Cats.push(<Chip key={cat.id} deletable={editable}
 		      onDeleteClick={() => onDeleteClick(i)}
 		      onClick={() => onClick(i)}>
 		      {cat.name}

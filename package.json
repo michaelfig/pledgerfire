@@ -29,10 +29,12 @@
   "reactToolbox": {
       "include": [
 	  "APP_BAR",
+	  "BUTTON",
 	  "MENU",
 	  "CHIP",
 	  "CARD",
-	  "TABS"
+	  "TABS",
+	  "INPUT"
       ],
       "output": "src/react-toolbox"
   }

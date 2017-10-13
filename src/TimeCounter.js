@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import { Component } from 'react'
 import PropTypes from 'prop-types'
 
 class TimeCounter extends Component {
@@ -18,7 +18,7 @@ class TimeCounter extends Component {
     
     render() {
 	const {pending} = this.props
-	return <span>{this.getElapsed(pending)}</span>
+	return this.getElapsed(pending)
     }
 }
 

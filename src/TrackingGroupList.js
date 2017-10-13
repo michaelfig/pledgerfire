@@ -13,11 +13,23 @@ class TrackingGroupList extends Component {
     }
 
     render() {
-	const {groups, visibleGroup, dispatch} = this.props
+	const {groups, visibleGroup, dispatch,
+	       trackers, categories, pendings} = this.props
 	var Groups = []
-	for (const group of groups) {
-	    Groups.push(<Tab key={group.id} label={group.title}><TrackerGroup
-			trackers={group.trackers} /></Tab>
+	for (const id in groups) {
+	    const group = {...groups[id],
+			   required: groups[id].required.map(id => categories[id]),
+			   trackers: groups[id].trackers.map(
+			       id =>
+				   ({...trackers[id],
+				     pendings: trackers[id].pendings.map(
+					 id => pendings[id]),
+				     categories: trackers[id].categories.map(
+					 id => categories[id]),
+				    }))
+			  }
+	    Groups.push(<Tab key={id} label={group.title}>
+			<TrackerGroup {...group} /></Tab>
 		       )
 	}
 
@@ -30,4 +42,5 @@ class TrackingGroupList extends Component {
     }
 }
 
-export default connect(({visibleGroup}) => ({visibleGroup}))(TrackingGroupList)
+export default connect(({local: {group}, trackers, categories, pendings}) =>
+		       ({visibleGroup:group,trackers,categories,pendings}))(TrackingGroupList)
