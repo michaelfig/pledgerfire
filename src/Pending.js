@@ -14,11 +14,10 @@ class Pending extends Component {
     render() {
 	const { unit } = this.props
 	if (unit === 's') {
-	    const childProps = {
-		...this.props,
-		start: this.props.timer !== null ? Math.floor(this.props.timer.getTime() / 1000) : null,
-	    }
-	    return <TimePending {...childProps} />
+	    const timer = this.props.start === null ? this.props.timer :
+		  Math.floor(this.props.start.getTime() / 1000)
+	    console.log(this.props.id, timer)
+	    return <TimePending {...{...this.props, timer}} />
 	}
 	else {
 	    throw new Error(`Unrecognized unit ${unit}`)

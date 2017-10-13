@@ -20,18 +20,20 @@ class App extends Component {
     }
 
     render() {
-	const { auth, groups } = this.props
+	const { auth, groups, now } = this.props
+	const stamp = new Date(now * 1000)
+	const title = `Pledger - ${stamp.toLocaleString()}`
 	const GroupList = (!isLoaded(auth) || isEmpty(auth)) ?
-	      <p>Logging in...</p> :
-	      <TrackingGroupList groups={groups} />
+	      <p key='c'>Logging in...</p> :
+	      <TrackingGroupList key='b' groups={groups} />
 				       
-	return [<AppBar leftIcon='menu' title='Pledger' rightIcon='account_circle'>
+	      return [<AppBar key='a' leftIcon='menu' title={title} rightIcon='account_circle'>
 		 </AppBar>, GroupList]
     }
 }
 
 const ConnectedApp = firebaseConnect()(connect(
-    ({firebase: {auth}, groups}) => ({auth: typeof auth === 'function' ? null : auth, groups})
+    ({firebase: {auth}, groups, local: {now}}) => ({auth: typeof auth === 'function' ? null : auth, groups, now})
 )(App))
 
 export default () => (

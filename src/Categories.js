@@ -8,22 +8,33 @@ import FontIcon from 'react-toolbox/lib/font_icon'
 class Categories extends Component {
     static propTypes = {
 	cats: PropTypes.array.isRequired,
-	onClick: PropTypes.func.isRequired,
-	onDeleteClick: PropTypes.func.isRequired,
 	editable: PropTypes.bool,
     }
 
+    handleDelete(cat) {
+	this.props.onUpdate(cat, null)
+    }
 
+    handleEdit(cat) {
+	alert(`FIXME: raise a category ${cat} edit dialog`)
+	const name = 'edited'
+	this.props.onUpdate(cat, name)
+    }
+
+    handleAdd() {
+	const name = 'new'
+	alert('FIXME: raise a category input dialog')
+	this.props.onUpdate(null, name)
+    }
+    
     render() {
-	const {cats, onDeleteClick, onClick, editable} = this.props
-	var Cats = editable ? [<FontIcon key={-1}>add_circle_outline</FontIcon>] : []
+	const {cats, editable} = this.props
+	var Cats = editable ? [<FontIcon key={-1} onClick={this.handleAdd.bind(this)}>add_circle_outline</FontIcon>] : []
 	
-	for (const i in cats) {
-	    const cat = cats[i]
-	    Cats.push(<Chip key={cat.id} deletable={editable}
-		      onDeleteClick={() => onDeleteClick(i)}
-		      onClick={() => onClick(i)}>
-		      {cat.name}
+	for (const cat of cats) {
+	    Cats.push(<Chip key={cat} deletable={editable}
+		      onDeleteClick={editable ? this.handleDelete.bind(this, cat) : null}>
+		      <span onClick={editable ? this.handleEdit.bind(this, cat) : null}>{cat}</span>
 		      </Chip>)
 	}
 	return Cats
