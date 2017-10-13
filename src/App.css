@@ -8,6 +8,10 @@
   animation: App-logo-pulse infinite 2s linear;
 }
   
+.App-logo-mini {
+  height: 64px;
+}
+  
 .App-header {
   background-color: #222;
   height: 150px;

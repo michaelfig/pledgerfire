@@ -1,13 +1,14 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import logo from './logo.svg'
-import './App.css';
+
 import TrackingGroupList from './TrackingGroupList'
 import { connect, Provider } from 'react-redux'
 import { firebaseConnect, isLoaded, isEmpty } from 'react-redux-firebase'
+
 import './react-toolbox/theme.css'
 import theme from './react-toolbox/theme'
 import ThemeProvider from 'react-toolbox/lib/ThemeProvider'
+import AppBar from 'react-toolbox/lib/app_bar/AppBar'
 
 import store from './store'
 import Ticker from './Ticker'
@@ -62,20 +63,10 @@ class App extends Component {
 		       ]
 	const GroupList = (!isLoaded(auth) || isEmpty(auth)) ?
 	      <p>Logging in...</p> :
-	      <div className='App-body'><TrackingGroupList groups={groups} /></div>
+	      <TrackingGroupList groups={groups} />
 				       
-	return (
-      <div className="App">
-        <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo"/>
-          <h2>Welcome to Pledger</h2>
-        </div>
-        <p className="App-intro">
-          Making an account of your life, socially.
-        </p>
-		{GroupList}
-      </div>
-    );
+	return [<AppBar leftIcon='menu' title='Pledger' rightIcon='account_circle'>
+		 </AppBar>, GroupList]
     }
 }
 

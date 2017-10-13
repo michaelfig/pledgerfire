@@ -28,6 +28,7 @@
   },
   "reactToolbox": {
       "include": [
+	  "APP_BAR",
 	  "MENU",
 	  "CHIP",
 	  "CARD",
