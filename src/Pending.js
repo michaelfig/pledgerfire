@@ -16,7 +16,6 @@ class Pending extends Component {
 	if (unit === 's') {
 	    const timer = this.props.start === null ? this.props.timer :
 		  Math.floor(this.props.start.getTime() / 1000)
-	    console.log(this.props.id, timer)
 	    return <TimePending {...{...this.props, timer}} />
 	}
 	else {

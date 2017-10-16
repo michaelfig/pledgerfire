@@ -1,11 +1,12 @@
 {
   "name": "pledgerfire",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": true,
   "homepage": ".",
   "dependencies": {
     "firebase": "^4.3.0",
     "firebase-tools": "^3.9.2",
+    "firebaseui": "^2.4.0",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
     "react-inline-css": "^2.3.1",
@@ -20,23 +21,24 @@
     "build": "node fbconfig.js && react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-      "toolbox": "react-toolbox-themr"
+    "toolbox": "react-toolbox-themr"
   },
   "devDependencies": {
     "react-toolbox": "^2.0.0-beta.12",
     "react-toolbox-themr": "^1.0.2"
   },
   "reactToolbox": {
-      "include": [
-	  "APP_BAR",
-	  "AVATAR",
-	  "BUTTON",
-	  "MENU",
-	  "CHIP",
-	  "CARD",
-	  "TABS",
-	  "INPUT"
-      ],
-      "output": "src/react-toolbox"
+    "include": [
+      "APP_BAR",
+      "AVATAR",
+	"BUTTON",
+	"DIALOG",
+      "MENU",
+      "CHIP",
+      "CARD",
+      "TABS",
+      "INPUT"
+    ],
+    "output": "src/react-toolbox"
   }
 }

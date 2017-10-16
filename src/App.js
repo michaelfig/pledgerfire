@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 
 import TrackingGroupList from './TrackingGroupList'
 import { connect, Provider } from 'react-redux'
-import { firebaseConnect, isLoaded, isEmpty } from 'react-redux-firebase'
 
 import './react-toolbox/theme.css'
 import theme from './react-toolbox/theme'
@@ -13,35 +12,43 @@ import AppBar from 'react-toolbox/lib/app_bar/AppBar'
 import store from './store'
 import Ticker from './Ticker'
 
+import AuthDialog from './AuthDialog'
+
 class App extends Component {
     static propTypes = {
-	auth: PropTypes.object,
 	groups: PropTypes.object,
     }
 
+    openAuth() {
+	this.props.dispatch({type: 'LOCAL_AUTH_ACTIVE', active: true})
+    }
+
     render() {
-	const { auth, groups, now } = this.props
+	const { groups, now } = this.props
 	const stamp = new Date(now * 1000)
 	const title = `Pledger - ${stamp.toLocaleString()}`
-	const GroupList = (!isLoaded(auth) || isEmpty(auth)) ?
-	      <p key='c'>Logging in...</p> :
-	      <TrackingGroupList key='b' groups={groups} />
-				       
-	      return [<AppBar key='a' leftIcon='menu' title={title} rightIcon='account_circle'>
-		 </AppBar>, GroupList]
+	return [<AppBar key='a' leftIcon='menu' title={title} rightIcon='account_circle'
+		onRightIconClick={this.openAuth.bind(this)}>
+		</AppBar>,
+		<TrackingGroupList key='b' groups={groups} />
+	       ]
     }
 }
 
-const ConnectedApp = firebaseConnect()(connect(
-    ({firebase: {auth}, groups, local: {now}}) => ({auth: typeof auth === 'function' ? null : auth, groups, now})
-)(App))
+const ConnectedApp = connect(
+    ({groups, local: {now}}) => ({groups, now})
+)(App)
+
 
 export default () => (
 	<Provider store={store}>
 	<ThemeProvider theme={theme}>
+	<div>
 	<Ticker>
 	<ConnectedApp />
 	</Ticker>
+	<AuthDialog />
+	</div>
 	</ThemeProvider>
 	</Provider>
 )

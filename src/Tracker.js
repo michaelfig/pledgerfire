@@ -30,43 +30,58 @@ class Tracker extends Component {
     }
 
     updateCategory(oldName, newName) {
-	const {categories, dispatch, id, localTrackers} = this.props
-	const cats2 = ((id in localTrackers) && localTrackers[id].categories) || categories
+	const {dispatch, id, localTrackers} = this.props
+	const attrs = {}
+	for (const attr of ['categories']) {
+	    if (id in localTrackers && localTrackers[id][attr] !== undefined) {
+		attrs[attr] = localTrackers[id][attr]
+	    }
+	    else {
+		attrs[attr] = this.props[attr]
+	    }
+	}
+
 	let value
 	if (newName === null) {
-	    value = cats2.filter(cat => (cat !== oldName))
+	    value = attrs.categories.filter(cat => (cat !== oldName))
 	}
 	else if (oldName === null) {
-	    value = cats2.filter(cat => (cat !== newName))
+	    value = attrs.categories.filter(cat => (cat !== newName))
 	    value.push(newName)
 	}
 	else {
-	    value = cats2.map(cat => (cat === oldName ? newName : cat))
+	    value = attrs.categories.map(cat => (cat === oldName ? newName : cat))
 	}
 	value.sort()
 	dispatch({type: 'LOCAL_TRACKER_SET', id, field:'categories', value})
     }
 
     render() {
-	const {id, pendings, title, notes, categories, localTrackers} = this.props
-	const expanded = (id in localTrackers) && localTrackers[id].expanded
- 	const title2 = ((id in localTrackers) && localTrackers[id].title) || title
-	const notes2 = ((id in localTrackers) && localTrackers[id].notes) || notes
-	const cats2 = ((id in localTrackers) && localTrackers[id].categories) || categories
+	const {id, pendings, localTrackers} = this.props
+	const attrs = {}
+	for (const attr of ['expanded', 'title', 'notes', 'categories']) {
+	    if (id in localTrackers && localTrackers[id][attr] !== undefined) {
+		attrs[attr] = localTrackers[id][attr]
+	    }
+	    else {
+		attrs[attr] = this.props[attr]
+	    }
+	}
+
 	var Pendings = []
 
-	const Icon = (expanded ? 'expand_less' : 'expand_more')
-	const Title = (expanded ?
-		       <Input label='Title' value={title2} onChange={this.handleChange.bind(this, 'title')}/> :
+	const Icon = (attrs.expanded ? 'expand_less' : 'expand_more')
+	const Title = (attrs.expanded ?
+		       <Input label='Title' value={attrs.title} onChange={this.handleChange.bind(this, 'title')}/> :
 		       [])
 
 
-	const Notes = (expanded ?
-		       <Input label='Notes' value={notes2} multiline onChange={this.handleChange.bind(this, 'notes')} /> :
+	const Notes = (attrs.expanded ?
+		       <Input label='Notes' value={attrs.notes} multiline onChange={this.handleChange.bind(this, 'notes')} /> :
 		       [])
 
-	const CategoriesLabel = (expanded ? <small style={{color:'#ccc'}}>Categories<br /></small> : [])
-	const Actions = (expanded ?
+	const CategoriesLabel = (attrs.expanded ? <small style={{color:'#ccc'}}>Categories<br /></small> : [])
+	const Actions = (attrs.expanded ?
 			 <CardActions>
 			 <Button icon='add' label='Commit' raised primary />
 			 <Button icon='delete_forever' label='Delete...' raised />
@@ -77,14 +92,14 @@ class Tracker extends Component {
 	}
 	return (
 		<Card>
-		<CardTitle title={<span><FontIcon onClick={this.handleChange.bind(this, 'expanded')}>{Icon}</FontIcon>{title2}</span>} />
+		<CardTitle title={<span><FontIcon onClick={this.handleChange.bind(this, 'expanded')}>{Icon}</FontIcon>{attrs.title === '' ? <i>Untitled</i> : attrs.title}</span>} />
 		<CardText>
 		{Title}
 		{Pendings}
 	    {Notes}
 	    {CategoriesLabel}
-		<Categories editable={expanded}
-	    onUpdate={this.updateCategory.bind(this)} cats={cats2} />
+		<Categories editable={attrs.expanded}
+	    onUpdate={this.updateCategory.bind(this)} cats={attrs.categories} />
 		</CardText>
 		{Actions}
 		</Card>

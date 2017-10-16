@@ -13,6 +13,14 @@ const localReducer = (state, action) => {
     case 'VISIBLE_GROUP_SET':
 	return {...state, group: action.group}
 
+    case 'LOCAL_AUTH_STATUS':
+	let status = {...action}
+	delete status.type
+	return {...state, auth: status}
+
+    case 'LOCAL_AUTH_ACTIVE':
+	return {...state, authActive: action.active}
+
     case 'LOCAL_TRACKER_SET':
 	const tracker = state.trackers[action.id] || {}
 	const newState = {...state, trackers:
@@ -22,7 +30,8 @@ const localReducer = (state, action) => {
 	
     default:
 	return state === undefined ?
-	    {group: 0, now: null, trackers: {}} : state
+	    {group: 0, now: Math.floor((new Date().getTime()) / 1000),
+	     trackers: {}, auth: {}, authActive: false} : state
     }
 }
 
@@ -117,7 +126,7 @@ const trackersReducer = (state, action) => {
     case 'TRACKER_ADD':
 	const id = state.last + 1
 	return {...state,
-		[id]: {id, title: 'Untitled', notes: '',
+		[id]: {id, title: '', notes: '',
 		       pendings: action.pendings,
 		       categories: action.categories},
 		last: id,
@@ -158,16 +167,11 @@ const rootReducer = combineReducers({
 })
 
 const firebaseApp = firebase.initializeApp(fbConfig)
+var onAuthStateChanged
 const rrfConfig = {
     userProfile: 'users',
     enableEmptyAuthChanges: true,
-    onAuthStateChanged: (user, firebase) => {
-	if (!user) {
-	    firebase.auth().signInAnonymously().catch(error => {
-		console.log('Error signing in anonymously', error.message);
-	    })
-	}
-    }
+    onAuthStateChanged: (user, firebase) => onAuthStateChanged(user, firebase),
 }
 const createStoreWithFirebase = compose(
     reactReduxFirebase(firebaseApp, rrfConfig)
@@ -178,4 +182,25 @@ const initialState = {
     firebase
 }
 
-export default createStoreWithFirebase(rootReducer, initialState)
+const store = createStoreWithFirebase(rootReducer, initialState)
+
+onAuthStateChanged = async (user, firebase) => {
+    if (!user) {
+	try {
+	    await firebase.auth().signInAnonymously()
+	    store.dispatch({type: 'LOCAL_AUTH_STATUS', uid: user.uid, anonymous: true})
+	} catch (error) {
+	    store.dispatch({type: 'LOCAL_AUTH_STATUS', error: error.message})
+	}
+    }
+    else {
+	const accessToken = await user.getIdToken()
+	store.dispatch({type: 'LOCAL_AUTH_STATUS',
+			uid: user.uid,
+			email: user.email,
+			phoneNumber: user.phoneNumber,
+			accessToken})
+    }
+}
+
+export default store

@@ -35,7 +35,7 @@ class TrackerGroup extends Component {
 	return (<section>
 		{Required}
 		{Trackers}
-		<Button style={{position: 'fixed', bottom: '10px', left: '90%'}}
+		<Button style={{position: 'fixed', bottom: '10px', right: '10px'}}
 		icon='alarm_add' floating accent mini
 		onClick={this.addTracker.bind(this)} />
 		</section>)
