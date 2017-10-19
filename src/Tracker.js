@@ -23,37 +23,35 @@ class Tracker extends Component {
 	notes: PropTypes.string.isRequired,
     }
 
-    newTrackers = {}
-
     state = {
 	active: false,
-	title: '',
-	notes: '',
     }
 
 
     handleChange(field, value) {
-	const {firebase, id, editTrackers} = this.props
+	const {dispatch, id} = this.props
 	if (field === 'expanded') {
-	    value = !((id in editTrackers) && editTrackers[id].expanded)
-	    firebase.updateProfile({[`editTrackers/${id}/expanded`]: value})
+	    dispatch({type: 'LOCAL_TRACKER_EXPAND', id})
 	    return
 	}
-	this.setState({...this.state, [field]: value})
-	if (this.newTrackers[field]) {
-	    clearTimeout(this.newTrackers[field])
+	if (this.state[field + '.timer']) {
+	    clearTimeout(this.state[field + '.timer'])
 	}
-	this.newTrackers[field] = setTimeout(this.pushTracker.bind(this, field, value), 1000)
+	this.setState({
+		       [field]: value,
+		       [field + '.timer']: setTimeout(this.pushTracker.bind(this, field), 1000)
+		      })
     }
 
-    pushTracker(field, value) {
+    pushTracker(field) {
 	const {firebase, id} = this.props
-	delete this.newTrackers[field]
+	const value = this.state[field]
 	firebase.updateProfile({[`editTrackers/${id}/${field}`]: value})
+	this.setState({[field]: null, [field+'.timer']: null})
     }
 
     deleteTracker() {
-	this.setState({...this.state, active: true})
+	this.setState({active: true})
     }
 
     confirmDelete() {
@@ -90,25 +88,14 @@ class Tracker extends Component {
     }
 
 
-    componentDidMount() {
-	const {id, editTrackers} = this.props
-	const state = {...this.state}
-	for (const attr of ['title', 'notes']) {
-	    if (id in editTrackers && editTrackers[id][attr] !== undefined) {
-		state[attr] = editTrackers[id][attr]
-	    }
-	    else {
-		state[attr] = this.props[attr]
-	    }
-	}
-	this.setState(state)
-    }
-
     render() {
-	const {id, pendings, editTrackers} = this.props
-	const attrs = {...this.state}
-	for (const attr of ['categories', 'expanded']) {
-	    if (id in editTrackers && editTrackers[id][attr] !== undefined) {
+	const {id, expanded, pendings, editTrackers} = this.props
+	const attrs = {expanded: !!expanded[id]}
+	for (const attr of ['categories', 'title', 'notes']) {
+	    if (attr in this.state && this.state[attr] !== null) {
+		attrs[attr] = this.state[attr]
+	    }
+	    else if (id in editTrackers && attr in editTrackers[id]) {
 		attrs[attr] = editTrackers[id][attr]
 	    }
 	    else {
@@ -158,4 +145,7 @@ class Tracker extends Component {
     }
 }
 
-export default firebaseConnect()(connect(({firebase: {profile: {editTrackers}}}) => ({editTrackers: editTrackers || {}}))(Tracker))
+export default firebaseConnect()(connect(
+    ({firebase: {profile: {editTrackers}}, local: {expanded}}) =>
+	({editTrackers: editTrackers || {}, expanded})
+)(Tracker))

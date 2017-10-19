@@ -16,10 +16,20 @@ const localReducer = (state, action) => {
     case 'LOCAL_AUTH_ACTIVE':
 	return {...state, authActive: action.active}
 
+    case 'LOCAL_TRACKER_EXPAND':
+	const state2 = {...state, expanded: {...state.expanded}}
+	if (state.expanded[action.id]) {
+	    delete state2.expanded[action.id]
+	}
+	else {
+	    state2.expanded[action.id] = true
+	}
+	return state2
+
     default:
 	return state === undefined ?
 	    {group: 0, now: Math.floor((new Date().getTime()) / 1000),
-	     trackers: {}, auth: {}, authActive: false} : state
+	     trackers: {}, auth: {}, authActive: false, expanded: {}} : state
     }
 }
 
