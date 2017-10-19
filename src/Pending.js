@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import {connect} from 'react-redux'
+
 import TimePending from './TimePending'
 
 class Pending extends Component {
@@ -12,11 +14,13 @@ class Pending extends Component {
     }
 
     render() {
-	const { unit } = this.props
+	const { unit, groups, group, pendings } = this.props
 	if (unit === 's') {
-	    const timer = this.props.start === null ? this.props.timer :
-		  Math.floor(this.props.start.getTime() / 1000)
-	    return <TimePending {...{...this.props, timer}} />
+	    const timer = this.props.start ?
+		  Math.floor(this.props.start.getTime() / 1000) :
+		  this.props.timer
+	    const stopGroup = groups[group].required && groups[group].required.length ? group : null
+	    return <TimePending {...{...this.props, pendings, stopGroup, timer}} />
 	}
 	else {
 	    throw new Error(`Unrecognized unit ${unit}`)
@@ -24,4 +28,5 @@ class Pending extends Component {
     }
 }
 
-export default Pending
+export default connect(({firebase: {profile: {groups, pendings}}}) =>
+		       ({groups, pendings}))(Pending)

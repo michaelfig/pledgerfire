@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
+import {firebaseConnect} from 'react-redux-firebase'
 import Pending from './Pending'
 import Categories from './Categories'
 
@@ -11,6 +12,7 @@ import CardText from 'react-toolbox/lib/card/CardText'
 import CardActions from 'react-toolbox/lib/card/CardActions'
 import Input from 'react-toolbox/lib/input/Input'
 import FontIcon from 'react-toolbox/lib/font_icon'
+import Snackbar from 'react-toolbox/lib/snackbar/Snackbar'
 
 class Tracker extends Component {
     static propTypes = {
@@ -21,20 +23,51 @@ class Tracker extends Component {
 	notes: PropTypes.string.isRequired,
     }
 
+    newTrackers = {}
+
+    state = {
+	active: false,
+	title: '',
+	notes: '',
+    }
+
+
     handleChange(field, value) {
-	const {dispatch, id, localTrackers} = this.props
+	const {firebase, id, editTrackers} = this.props
 	if (field === 'expanded') {
-	    value = !((id in localTrackers) && localTrackers[id].expanded)
+	    value = !((id in editTrackers) && editTrackers[id].expanded)
+	    firebase.updateProfile({[`editTrackers/${id}/expanded`]: value})
+	    return
 	}
-	dispatch({type: 'LOCAL_TRACKER_SET', id, field, value})
+	this.setState({...this.state, [field]: value})
+	if (this.newTrackers[field]) {
+	    clearTimeout(this.newTrackers[field])
+	}
+	this.newTrackers[field] = setTimeout(this.pushTracker.bind(this, field, value), 1000)
+    }
+
+    pushTracker(field, value) {
+	const {firebase, id} = this.props
+	delete this.newTrackers[field]
+	firebase.updateProfile({[`editTrackers/${id}/${field}`]: value})
+    }
+
+    deleteTracker() {
+	this.setState({...this.state, active: true})
+    }
+
+    confirmDelete() {
+	const {firebase, id} = this.props
+	firebase.updateProfile({[`editTrackers/${id}`]: null})
+	this.props.onDelete()
     }
 
     updateCategory(oldName, newName) {
-	const {dispatch, id, localTrackers} = this.props
+	const {firebase, id, editTrackers} = this.props
 	const attrs = {}
 	for (const attr of ['categories']) {
-	    if (id in localTrackers && localTrackers[id][attr] !== undefined) {
-		attrs[attr] = localTrackers[id][attr]
+	    if (id in editTrackers && editTrackers[id][attr] !== undefined) {
+		attrs[attr] = editTrackers[id][attr]
 	    }
 	    else {
 		attrs[attr] = this.props[attr]
@@ -53,15 +86,30 @@ class Tracker extends Component {
 	    value = attrs.categories.map(cat => (cat === oldName ? newName : cat))
 	}
 	value.sort()
-	dispatch({type: 'LOCAL_TRACKER_SET', id, field:'categories', value})
+	firebase.updateProfile({[`editTrackers/${id}/categories`]: value})
+    }
+
+
+    componentDidMount() {
+	const {id, editTrackers} = this.props
+	const state = {...this.state}
+	for (const attr of ['title', 'notes']) {
+	    if (id in editTrackers && editTrackers[id][attr] !== undefined) {
+		state[attr] = editTrackers[id][attr]
+	    }
+	    else {
+		state[attr] = this.props[attr]
+	    }
+	}
+	this.setState(state)
     }
 
     render() {
-	const {id, pendings, localTrackers} = this.props
-	const attrs = {}
-	for (const attr of ['expanded', 'title', 'notes', 'categories']) {
-	    if (id in localTrackers && localTrackers[id][attr] !== undefined) {
-		attrs[attr] = localTrackers[id][attr]
+	const {id, pendings, editTrackers} = this.props
+	const attrs = {...this.state}
+	for (const attr of ['categories', 'expanded']) {
+	    if (id in editTrackers && editTrackers[id][attr] !== undefined) {
+		attrs[attr] = editTrackers[id][attr]
 	    }
 	    else {
 		attrs[attr] = this.props[attr]
@@ -72,7 +120,7 @@ class Tracker extends Component {
 
 	const Icon = (attrs.expanded ? 'expand_less' : 'expand_more')
 	const Title = (attrs.expanded ?
-		       <Input label='Title' value={attrs.title} onChange={this.handleChange.bind(this, 'title')}/> :
+		       <Input label='Tracker Title' value={attrs.title} onChange={this.handleChange.bind(this, 'title')}/> :
 		       [])
 
 
@@ -83,8 +131,8 @@ class Tracker extends Component {
 	const CategoriesLabel = (attrs.expanded ? <small style={{color:'#ccc'}}>Categories<br /></small> : [])
 	const Actions = (attrs.expanded ?
 			 <CardActions>
-			 <Button icon='add' label='Commit' raised primary />
-			 <Button icon='delete_forever' label='Delete...' raised />
+			 <Button icon='add' label='Commit' onClick={this.props.onCommit} raised primary />
+			 <Button icon='delete_forever' label='Delete...' onClick={this.deleteTracker.bind(this)} raised />
 			 </CardActions> : [])
        
 	for (const pending of pendings) {
@@ -92,7 +140,7 @@ class Tracker extends Component {
 	}
 	return (
 		<Card>
-		<CardTitle title={<span><FontIcon onClick={this.handleChange.bind(this, 'expanded')}>{Icon}</FontIcon>{attrs.title === '' ? <i>Untitled</i> : attrs.title}</span>} />
+		<CardTitle title={<span onClick={this.handleChange.bind(this, 'expanded')}><FontIcon>{Icon}</FontIcon>{attrs.title === '' ? <i>Untitled</i> : attrs.title}</span>} />
 		<CardText>
 		{Title}
 		{Pendings}
@@ -102,9 +150,12 @@ class Tracker extends Component {
 	    onUpdate={this.updateCategory.bind(this)} cats={attrs.categories} />
 		</CardText>
 		{Actions}
+		<Snackbar key='confirm' active={this.state.active} action='Yes, delete' label='Are you sure you wish to permanently delete the tracker?'
+	    onClick={this.confirmDelete.bind(this)}
+	    type='accept'/>
 		</Card>
 	)
     }
 }
 
-export default connect(({local:{trackers}}) => ({localTrackers: trackers}))(Tracker)
+export default firebaseConnect()(connect(({firebase: {profile: {editTrackers}}}) => ({editTrackers: editTrackers || {}}))(Tracker))

@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
-import {connect} from 'react-redux'
 import PropTypes from 'prop-types'
 import Tracker from './Tracker'
 import Categories from './Categories'
 
 import Button from 'react-toolbox/lib/button/Button'
+import Input from 'react-toolbox/lib/input/Input'
 
 class TrackerGroup extends Component {
     static propTypes = {
@@ -13,35 +13,37 @@ class TrackerGroup extends Component {
 	trackers: PropTypes.array.isRequired,
     }
 
-    addTracker() {
-	const {dispatch, id, gpendings, gtrackers, required, now} = this.props
-	dispatch({type: 'TIME_PENDING_ADD', timer: now, group: id})
-	dispatch({type: 'TRACKER_ADD', pendings: [gpendings.last + 1],
-		  categories: required})
-	dispatch({type: 'GROUP_TRACKER_ADD', id, tracker: gtrackers.last + 1})
+    state = {
+	title: ''
     }
-    
-    render() {
-	const {trackers, required} = this.props
-	const Required = (required.length === 0 ?  '' :
-			  <span>Required: <Categories
-			  cats={required} /></span>)
 
+    componentDidMount() {
+	this.setState({title: this.props.title})
+    }
+	
+    
+    quickChange(value) {
+	this.props.onTitle(value)
+	this.setState({title: value})
+    }
+
+    render() {
+	const {trackers, required, onDelete, onRequired, onAddTracker,
+	       onDeleteTracker} = this.props
 	var Trackers = []
 
 	for (const tracker of trackers) {
-	    Trackers.push(<Tracker key={tracker.id} {...tracker} />)
+	    Trackers.push(<Tracker key={tracker.id} {...tracker} onDelete={(event) => onDeleteTracker(tracker.id, event)} />)
 	}
 	return (<section>
-		{Required}
+		<Input label='Group Title' maxLength={20} value={this.state.title} onChange={this.quickChange.bind(this)}/>
+		<span>Toggle Categories: <Categories editable={true} onUpdate={onRequired} cats={required} /></span><br />
+		<Button icon='alarm_add' label='Add Tracker' accent
+		onClick={onAddTracker} />
+		<Button icon='delete_forever' label='Delete Group...' onClick={onDelete}/>
 		{Trackers}
-		<Button style={{position: 'fixed', bottom: '10px', right: '10px'}}
-		icon='alarm_add' floating accent mini
-		onClick={this.addTracker.bind(this)} />
 		</section>)
     }
 }
 
-export default connect(({pendings, trackers, local: {now}}) =>
-		       ({gpendings: pendings,
-			 gtrackers: trackers, now}))(TrackerGroup)
+export default TrackerGroup

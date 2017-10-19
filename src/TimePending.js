@@ -1,11 +1,14 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
+import {firebaseConnect} from 'react-redux-firebase'
 import TimeGoal from './TimeGoal'
 import TimeCounter from './TimeCounter'
 
 import Avatar from 'react-toolbox/lib/avatar/Avatar'
 import Chip from 'react-toolbox/lib/chip/Chip'
+
+import {stopPendingGroup} from './utils'
 
 class TimePending extends Component {
     static propTypes = {
@@ -19,21 +22,32 @@ class TimePending extends Component {
     }
 
     toggleRunning() {
-	const {timer, id, now, pending, dispatch} = this.props
-	if (timer === null) {
-	    dispatch({type:'TIME_PENDING_START', id, timer: now})
+	const {firebase, timer, id, stopGroup, now, pending, pendings} = this.props
+	if (!timer) {
+	    let updates
+	    if (stopGroup)
+		updates = stopPendingGroup(pendings, stopGroup, now)
+	    else
+		updates = {}
+	    firebase.updateProfile({...updates,
+				    [`pendings/${id}/start`]: null,
+				    [`pendings/${id}/timer`]: now,
+				   })
 	}
 	else {
-	    dispatch({type:'TIME_PENDING_PAUSE', id, pending: (now - timer) + pending})
+	    firebase.updateProfile({[`pendings/${id}/pending`]: (now - timer) + pending,
+				    [`pendings/${id}/start`]: null,
+				    [`pendings/${id}/timer`]: null,
+				   })
 	}
     }
 
     render() {
 	const {now, pending, timer, base, goal} = this.props
-	const sofar = (timer === null ? 0 : now - timer) + pending
+	const sofar = (timer ? now - timer : 0) + pending
 	const goalProps = {pending:sofar, base, goal}
-	const icon = (timer === null ? 'alarm_on' : 'alarm_off')
-	const bgcolor = (timer == null ? 'red' : 'green')
+	const icon = (timer ? 'alarm_off' : 'alarm_on')
+	const bgcolor = (timer ? 'green' : 'red')
 	return <Chip>
 	    <Avatar onClick={this.toggleRunning.bind(this)} style={{backgroundColor: bgcolor}} icon={icon} />
 	    <TimeCounter pending={sofar} />
@@ -42,5 +56,5 @@ class TimePending extends Component {
     }
 }
 
-const ConnectedTimePending = connect(({local: {now}}) => ({now}))(TimePending)
+const ConnectedTimePending = firebaseConnect()(connect(({local: {now}}) => ({now}))(TimePending))
 export default ConnectedTimePending

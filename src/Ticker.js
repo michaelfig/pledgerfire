@@ -3,7 +3,9 @@ import { connect } from 'react-redux'
 import { firebaseConnect } from 'react-redux-firebase'
 import PropTypes from 'prop-types'
 
-const GLOBAL_TICKER_INTERVAL_MS = 200
+// Specify update interval with '?ticker=NNN' milliseconds on the URL
+const tickerMatch = window.location.search.match(/(^\?|&)ticker=(\d+)/)
+const GLOBAL_TICKER_INTERVAL_MS = tickerMatch ? tickerMatch[2] : 200
 
 var globalRefs = 0
 var globalNow = null

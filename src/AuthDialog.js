@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 
 import { connect } from 'react-redux'
-import { firebaseConnect, isLoaded, isEmpty } from 'react-redux-firebase'
+import { firebaseConnect, isLoaded } from 'react-redux-firebase'
 
 import Dialog from 'react-toolbox/lib/dialog/Dialog'
 
@@ -11,12 +11,6 @@ import 'firebaseui/dist/firebaseui.css'
 
 class AuthDialog extends Component {
     authConfig = {
-	callbacks: {
-	    signInSuccess: (currentUser, credential, redirectUrl) => {
-		// FIXME: Maybe merge the account.
-		return true;
-	    },
-	},
 	signInOptions: [
 	    firebase.auth.GoogleAuthProvider.PROVIDER_ID,
 	    //firebase.auth.FacebookAuthProvider.PROVIDER_ID,
@@ -35,7 +29,6 @@ class AuthDialog extends Component {
     }
 
     signOut() {
-	//this.closeAuth()
 	firebase.auth().signOut()
     }
 
@@ -49,21 +42,27 @@ class AuthDialog extends Component {
     }
 
     render() {
-	const { lauth, auth, active } = this.props
+	const { profile, active } = this.props
+	let Status
+	if (!isLoaded(profile))
+	    Status = (<div>Logging in...</div>)
+	else if (profile.isAnonymous)
+	    Status = (<div>Signed in anonymously ({profile.uid})</div>)
+	else
+	    Status = (<div>Signed in as {profile.email || profile.phoneNumber}</div>)
 	return (<Dialog
-		actions={[{label: 'OK', onClick: this.closeAuth.bind(this)},
+		actions={[{label: 'Cancel', primary:true, onClick: this.closeAuth.bind(this)},
 			  {label: 'Sign Out', onClick: this.signOut.bind(this)}]}
 		active={active} title='Sign In'
 		onEscKeyDown={this.closeAuth.bind(this)}
 		onOverlayClick={this.closeAuth.bind(this)}>
-		{lauth.error ? <div>Error logging in: {lauth.error}</div> : []}
-		{auth && auth.isAnonymous ? <div>Signed in anonymously ({auth.uid})</div> : (!isLoaded(auth) || isEmpty(auth)) ? <div>Logging in...</div> : <div>Signed in as {lauth.email || lauth.phoneNumber}</div>}
+		{Status}
 		<div id='auth-ui' ref={this.refAuth.bind(this)}></div>
 		</Dialog>)
     }
 }
 
 export default firebaseConnect()(connect(
-    ({firebase: {auth}, local: {auth: lauth, authActive}}) =>
-	({auth: typeof auth === 'function' ? null : auth, lauth, active: authActive})
+    ({firebase: {profile}, local: {authActive}}) =>
+	({profile, active: authActive})
 )(AuthDialog))
