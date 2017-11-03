@@ -11,6 +11,10 @@ import 'firebaseui/dist/firebaseui.css'
 
 class AuthDialog extends Component {
     authConfig = {
+	callbacks: {
+	    // Don't redirect.
+	    'signInSuccess': (user, credential, redirectUrl) => false,
+	},
 	signInOptions: [
 	    firebase.auth.GoogleAuthProvider.PROVIDER_ID,
 	    //firebase.auth.FacebookAuthProvider.PROVIDER_ID,
@@ -51,7 +55,7 @@ class AuthDialog extends Component {
 	else
 	    Status = (<div>Signed in as {profile.email || profile.phoneNumber}</div>)
 	return (<Dialog
-		actions={[{label: 'Cancel', primary:true, onClick: this.closeAuth.bind(this)},
+		actions={[{label: 'Dismiss', primary:true, onClick: this.closeAuth.bind(this)},
 			  {label: 'Sign Out', onClick: this.signOut.bind(this)}]}
 		active={active} title='Sign In'
 		onEscKeyDown={this.closeAuth.bind(this)}

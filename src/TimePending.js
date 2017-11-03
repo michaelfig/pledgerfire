@@ -4,6 +4,7 @@ import {connect} from 'react-redux'
 import {firebaseConnect} from 'react-redux-firebase'
 import TimeGoal from './TimeGoal'
 import TimeCounter from './TimeCounter'
+import Ticker from './Ticker'
 
 import Avatar from 'react-toolbox/lib/avatar/Avatar'
 import Chip from 'react-toolbox/lib/chip/Chip'
@@ -50,8 +51,10 @@ class TimePending extends Component {
 	const bgcolor = (timer ? 'green' : 'red')
 	return <Chip>
 	    <Avatar onClick={this.toggleRunning.bind(this)} style={{backgroundColor: bgcolor}} icon={icon} />
+	    <Ticker>
 	    <TimeCounter pending={sofar} />
 	    <TimeGoal {...goalProps} />
+	    </Ticker>
 	    </Chip>
     }
 }

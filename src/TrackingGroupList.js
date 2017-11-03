@@ -89,8 +89,8 @@ class TrackingGroupList extends Component {
 	})
     }
 
-    addTracker(id) {
-	const {firebase, groups, pendings, trackers, now} = this.props
+    addTracker(id, now) {
+	const {firebase, groups, pendings, trackers} = this.props
 	const required = groups[id].required || []
 	const pid = pendings.last + 1
 	let update
@@ -167,20 +167,20 @@ class TrackingGroupList extends Component {
 		{Groups}
 	        <Tab key='add' icon='add_circle_outline' onClick={this.addGroup.bind(this)} />
 		</Tabs>,
-		<Snackbar key='confirm' active={this.state.active} action='Yes, delete' label='Are you sure you wish to permanently delete the tracker group?'
-	    onClick={this.confirmDelete.bind(this)}
-	    type='accept'/>
+		<Snackbar key='confirm' active={this.state.active} timeout={5000}
+	         action='Yes, delete' label='Are you sure you wish to permanently delete the tracker group?'
+	         onClick={this.confirmDelete.bind(this)}
+	         type='accept'/>
 
 	]
     }
 }
 
 export default firebaseConnect()(connect(
-    ({firebase: {profile}, local: {group, now}}) =>
+    ({firebase: {profile}, local: {group}}) =>
 	({visibleGroup:group,
 	  groups: profile.groups || {last:0},
 	  trackers: profile.trackers || {last:0},
 	  pendings: profile.pendings || {last:0},
-	  now,
 	 })
 )(TrackingGroupList))

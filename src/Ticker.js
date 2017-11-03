@@ -1,4 +1,4 @@
-import { Component, Children } from 'react'
+import { Component } from 'react'
 import { connect } from 'react-redux'
 import { firebaseConnect } from 'react-redux-firebase'
 import PropTypes from 'prop-types'
@@ -14,7 +14,6 @@ var globalOffset = 0
 
 class Ticker extends Component {
     static propTypes = {
-	children: PropTypes.element.isRequired,
 	dispatch: PropTypes.func.isRequired,
 	firebase: PropTypes.object.isRequired,
     }
@@ -35,6 +34,7 @@ class Ticker extends Component {
     componentDidMount() {
 	if (globalRefs ++ === 0) {
 	    const offsetRef = this.props.firebase.ref('.info/serverTimeOffset')
+
 	    offsetRef.on('value', (snap) => {
 		globalOffset = snap.val()
 		//console.log('set globalOffset to ', globalOffset)
@@ -46,7 +46,7 @@ class Ticker extends Component {
     }
 
     render() {
-	return Children.only(this.props.children)
+	return this.props.children
     }
 }
 
