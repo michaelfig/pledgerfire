@@ -3,8 +3,8 @@ import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
 import {firebaseConnect} from 'react-redux-firebase'
 import Pending from './Pending'
-import Categories from './Categories'
 
+import Chip from 'react-toolbox/lib/chip/Chip'
 import Button from 'react-toolbox/lib/button/Button'
 import Card from 'react-toolbox/lib/card/Card'
 import CardTitle from 'react-toolbox/lib/card/CardTitle'
@@ -13,6 +13,7 @@ import CardActions from 'react-toolbox/lib/card/CardActions'
 import Input from 'react-toolbox/lib/input/Input'
 import FontIcon from 'react-toolbox/lib/font_icon'
 import Snackbar from 'react-toolbox/lib/snackbar/Snackbar'
+import Autocomplete from 'react-toolbox/lib/autocomplete/Autocomplete'
 
 class Tracker extends Component {
     static propTypes = {
@@ -60,36 +61,24 @@ class Tracker extends Component {
 	this.props.onDelete()
     }
 
-    updateCategory(oldName, newName) {
-	const {firebase, id, editTrackers} = this.props
-	const attrs = {}
-	for (const attr of ['categories']) {
-	    if (id in editTrackers && editTrackers[id][attr] !== undefined) {
-		attrs[attr] = editTrackers[id][attr]
-	    }
-	    else {
-		attrs[attr] = this.props[attr]
-	    }
+    updateCategories(value) {
+	const {firebase, id, allCategories} = this.props
+	const cats = {}
+	for (const cat of allCategories) {
+	    cats[cat] = true
 	}
-
-	let value
-	if (newName === null) {
-	    value = attrs.categories.filter(cat => (cat !== oldName))
+	for (const cat of value) {
+	    cats[cat] = true
 	}
-	else if (oldName === null) {
-	    value = attrs.categories.filter(cat => (cat !== newName))
-	    value.push(newName)
-	}
-	else {
-	    value = attrs.categories.map(cat => (cat === oldName ? newName : cat))
-	}
-	value.sort()
-	firebase.updateProfile({[`editTrackers/${id}/categories`]: value})
+	
+	firebase.updateProfile({[`editTrackers/${id}/categories`]: value,
+				allCategories: Object.keys(cats).sort(),
+			       })
     }
 
 
     render() {
-	const {id, expanded, pendings, editTrackers} = this.props
+	const {id, expanded, pendings, editTrackers, allCategories} = this.props
 	const attrs = {expanded: !!expanded[id]}
 	for (const attr of ['categories', 'title', 'notes']) {
 	    if (attr in this.state && this.state[attr] !== null) {
@@ -115,7 +104,14 @@ class Tracker extends Component {
 		       <Input label='Notes' value={attrs.notes} multiline onChange={this.handleChange.bind(this, 'notes')} /> :
 		       [])
 
-	const CategoriesLabel = (attrs.expanded ? <small style={{color:'#ccc'}}>Categories<br /></small> : [])
+	const Categories = (attrs.expanded ?
+			    <Autocomplete label="Choose categories"
+			    allowCreate={true}
+			    onChange={this.updateCategories.bind(this)}
+			    value={attrs.categories}
+			    source={allCategories}/> :
+			    attrs.categories.map((cat) => <Chip key={cat}>{cat}</Chip>))
+
 	const Actions = (attrs.expanded ?
 			 <CardActions>
 			 <Button icon='add' label='Commit' onClick={this.props.onCommit} raised primary />
@@ -131,10 +127,8 @@ class Tracker extends Component {
 		<CardText>
 		{Title}
 		{Pendings}
+	    {Categories}
 	    {Notes}
-	    {CategoriesLabel}
-		<Categories editable={attrs.expanded}
-	    onUpdate={this.updateCategory.bind(this)} cats={attrs.categories} />
 		</CardText>
 		{Actions}
 		<Snackbar key='confirm' active={this.state.active} action='Yes, delete' label='Are you sure you wish to permanently delete the tracker?'
@@ -146,6 +140,8 @@ class Tracker extends Component {
 }
 
 export default firebaseConnect()(connect(
-    ({firebase: {profile: {editTrackers}}, local: {expanded}}) =>
-	({editTrackers: editTrackers || {}, expanded})
+    ({firebase: {profile: {allCategories, editTrackers}}, local: {expanded}}) =>
+	({allCategories: allCategories || [],
+	  editTrackers: editTrackers || {},
+	  expanded})
 )(Tracker))

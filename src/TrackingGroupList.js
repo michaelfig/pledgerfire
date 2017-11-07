@@ -23,6 +23,7 @@ class TrackingGroupList extends Component {
 	    [`groups/${id}`]: {
 		id,
 		title:`Group ${id}`,
+		toggle:true,
 	    },
 	    'groups/last': id,
 	})
@@ -30,7 +31,7 @@ class TrackingGroupList extends Component {
 
     deleteId = null
     state = {
-	active: false
+	active: false,
     }
 
     deleteGroup(id) {
@@ -62,6 +63,11 @@ class TrackingGroupList extends Component {
 			      title}
     }
 
+    updateToggle(id, value) {
+	const {firebase} = this.props
+	firebase.updateProfile({[`groups/${id}/toggle`]: value})
+    }
+
     pushTitle(id) {
 	const {firebase} = this.props
 	const {title} = this.newTitles[id]
@@ -69,32 +75,12 @@ class TrackingGroupList extends Component {
 	firebase.updateProfile({[`groups/${id}/title`]: title})
     }    
 
-    updateRequired(id, oldName, newName) {
-	const {firebase, groups} = this.props
-	const required = groups[id].required || []
-	let value
-	if (newName === null) {
-	    value = required.filter(cat => cat !== oldName)
-	}
-	else if (oldName === null) {
-	    value = required.filter(cat => cat !== newName)
-	    value.push(newName)
-	}
-	else {
-	    value = required.map(cat => cat === oldName ? newName : cat)
-	}
-	value.sort()
-	firebase.updateProfile({
-	    [`groups/${id}/required`]: value
-	})
-    }
 
     addTracker(id, now) {
 	const {firebase, groups, pendings, trackers} = this.props
-	const required = groups[id].required || []
 	const pid = pendings.last + 1
 	let update
-	if (required.length) {
+	if (groups[id].toggle) {
 	    update = stopPendingGroup(pendings, id, now)
 	}
 	else {
@@ -113,8 +99,7 @@ class TrackingGroupList extends Component {
 		...update,
 	    [`groups/${id}/trackers`]: gtrackers,
 	    [`trackers/${tid}`]: {id:tid, title: '', notes: '',
-				  pendings: [pid],
-				  categories: required},
+				  pendings: [pid]},
 	    'trackers/last': tid,
 	})
     }
@@ -137,7 +122,7 @@ class TrackingGroupList extends Component {
     render() {
 	const {groups, visibleGroup, dispatch,
 	       trackers, pendings} = this.props
-	var Groups = []
+	const Groups = []
 	for (const id in groups) {
 	    if (id === 'last')
 		continue
@@ -149,13 +134,13 @@ class TrackingGroupList extends Component {
 				     pendings: (trackers[id].pendings||[]).map(
 					 id => pendings[id]),
 				    })),
-			   required: (groups[id].required||[]),
 			  }
 	    Groups.push(<Tab key={id} label={group.title}>
 			<TrackerGroup {...group}
+			toggle={groups[id].toggle}
 			onDelete={this.deleteGroup.bind(this, id)}
-			onRequired={this.updateRequired.bind(this, id)}
 			onTitle={this.updateTitle.bind(this, id)}
+			onToggle={this.updateToggle.bind(this, id)}
 			onAddTracker={this.addTracker.bind(this, id)}
 			onDeleteTracker={this.deleteTracker.bind(this, id)} /></Tab>
 		       )

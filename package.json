@@ -1,6 +1,6 @@
 {
   "name": "pledgerfire",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "private": true,
   "homepage": ".",
   "dependencies": {
@@ -29,8 +29,9 @@
   },
   "reactToolbox": {
     "include": [
-      "APP_BAR",
-      "AVATAR",
+	"APP_BAR",
+	"AUTOCOMPLETE",
+	"AVATAR",
       "BUTTON",
       "DIALOG",
       "MENU",
@@ -38,7 +39,8 @@
       "CARD",
       "TABS",
 	"INPUT",
-	"SNACKBAR"
+	"SNACKBAR",
+	"SWITCH"
     ],
     "output": "src/react-toolbox"
   }

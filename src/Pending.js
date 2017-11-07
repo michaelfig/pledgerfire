@@ -19,7 +19,7 @@ class Pending extends Component {
 	    const timer = this.props.start ?
 		  Math.floor(this.props.start.getTime() / 1000) :
 		  this.props.timer
-	    const stopGroup = groups[group].required && groups[group].required.length ? group : null
+	    const stopGroup = groups[group].toggle ? group : null
 	    return <TimePending {...{...this.props, pendings, stopGroup, timer}} />
 	}
 	else {
