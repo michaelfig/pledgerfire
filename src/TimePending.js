@@ -22,6 +22,11 @@ class TimePending extends Component {
 	goal: PropTypes.number.isRequired,
     }
 
+
+    state = {
+	active: false,
+    }
+
     toggleRunning() {
 	const {firebase, timer, id, stopGroup, now, pending, pendings} = this.props
 	if (!timer) {
@@ -44,17 +49,19 @@ class TimePending extends Component {
     }
 
     render() {
-	const {now, pending, timer, base, goal} = this.props
+	const {id, now, pending, timer, base, goal} = this.props
 	const sofar = (timer ? now - timer : 0) + pending
 	const goalProps = {pending:sofar, base, goal}
 	const icon = (timer ? 'alarm_off' : 'alarm_on')
 	const bgcolor = (timer ? 'green' : 'red')
-	return <Chip>
+	return <Chip key={id} style={{paddingRight: 0}}>
 	    <Avatar onClick={this.toggleRunning.bind(this)} style={{backgroundColor: bgcolor}} icon={icon} />
 	    <Ticker>
 	    <TimeCounter pending={sofar} />
 	    <TimeGoal {...goalProps} />
 	    </Ticker>
+	    <Avatar icon='restore' style={{marginLeft:'8px', marginRight: 0}}
+	    onClick={() => this.props.dispatch({type: 'LOCAL_PENDING_RESET', id})} />
 	    </Chip>
     }
 }

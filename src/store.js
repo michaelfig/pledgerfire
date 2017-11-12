@@ -16,6 +16,12 @@ const localReducer = (state, action) => {
     case 'LOCAL_AUTH_ACTIVE':
 	return {...state, authActive: action.active}
 
+    case 'LOCAL_PENDING_RESET':
+	return {...state, pendingReset: action.id}
+
+    case 'LOCAL_TRACKER_DELETE':
+	return {...state, trackerDelete: action.id}
+
     case 'LOCAL_TRACKER_EXPAND':
 	const state2 = {...state, expanded: {...state.expanded}}
 	if (state.expanded[action.id]) {

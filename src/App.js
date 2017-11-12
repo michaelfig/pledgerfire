@@ -5,6 +5,8 @@ import { HashRouter } from 'react-router-dom'
 
 import TrackingGroupList from './TrackingGroupList'
 import TimeSheet from './TimeSheet'
+import Kronos from './Kronos'
+
 import { connect, Provider } from 'react-redux'
 import { firebaseConnect } from 'react-redux-firebase'
 
@@ -60,6 +62,9 @@ class App extends Component {
 		    <Route path='/timesheet' render={(props) => (
 			<TimeSheet {...props} auth={auth} />
 		    )} />
+		    <Route path='/kronos' render={(props) => (
+			<Kronos {...props} auth={auth} />
+		    )} />
 		    <Route path='/' render={(props) => (
 			    <div>Unrecognized path {props.location.pathname}</div>
 		    )} />
@@ -73,6 +78,7 @@ class App extends Component {
 		<Navigation type='vertical'>
 		<Link label='Trackers' icon='alarm_on' href='#/tracker' onClick={this.toggleNav} />
 		<Link label='Timesheet' icon='event_note' href='#/timesheet' onClick={this.toggleNav} />
+		<Link label='Kronos' href='#/kronos' onClick={this.toggleNav} />
 		</Navigation>
 		</NavDrawer>
 		<Panel>

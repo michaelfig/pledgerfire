@@ -12,7 +12,6 @@ import CardText from 'react-toolbox/lib/card/CardText'
 import CardActions from 'react-toolbox/lib/card/CardActions'
 import Input from 'react-toolbox/lib/input/Input'
 import FontIcon from 'react-toolbox/lib/font_icon'
-import Snackbar from 'react-toolbox/lib/snackbar/Snackbar'
 import Autocomplete from 'react-toolbox/lib/autocomplete/Autocomplete'
 
 class Tracker extends Component {
@@ -51,16 +50,6 @@ class Tracker extends Component {
 	this.setState({[field]: null, [field+'.timer']: null})
     }
 
-    deleteTracker() {
-	this.setState({active: true})
-    }
-
-    confirmDelete() {
-	const {firebase, id} = this.props
-	firebase.updateProfile({[`editTrackers/${id}`]: null})
-	this.props.onDelete()
-    }
-
     updateCategories(value) {
 	const {firebase, id, allCategories} = this.props
 	const cats = {}
@@ -78,7 +67,7 @@ class Tracker extends Component {
 
 
     render() {
-	const {id, expanded, pendings, editTrackers, allCategories} = this.props
+	const {id, expanded, pendings, editTrackers, allCategories, onDelete} = this.props
 	const attrs = {expanded: !!expanded[id]}
 	for (const attr of ['categories', 'title', 'notes']) {
 	    if (attr in this.state && this.state[attr] !== null) {
@@ -115,7 +104,7 @@ class Tracker extends Component {
 	const Actions = (attrs.expanded ?
 			 <CardActions>
 			 <Button icon='add' label='Commit' onClick={this.props.onCommit} raised primary />
-			 <Button icon='delete_forever' label='Delete...' onClick={this.deleteTracker.bind(this)} raised />
+			 <Button icon='delete_forever' label='Delete...' onClick={onDelete} raised />
 			 </CardActions> : [])
        
 	for (const pending of pendings) {
@@ -131,9 +120,6 @@ class Tracker extends Component {
 	    {Notes}
 		</CardText>
 		{Actions}
-		<Snackbar key='confirm' active={this.state.active} action='Yes, delete' label='Are you sure you wish to permanently delete the tracker?'
-	    onClick={this.confirmDelete.bind(this)}
-	    type='accept'/>
 		</Card>
 	)
     }
