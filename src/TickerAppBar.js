@@ -4,13 +4,13 @@ import { connect } from 'react-redux'
 
 import Ticker from './Ticker'
 
-const TickerAppBar = ({now, openAuth}) => {
+const TickerAppBar = ({now, openAuth, openMenu}) => {
     const stamp = new Date(now * 1000)
     const title = `Pledger - ${stamp.toLocaleString()}`
 
     return (<Ticker>
 	    <AppBar leftIcon='menu' title={title} rightIcon='account_circle'
-            onRightIconClick={openAuth}>
+            onRightIconClick={openAuth} onLeftIconClick={openMenu}>
 	    </AppBar>
 	    </Ticker>)
 }

@@ -79,8 +79,10 @@ class TrackingGroupList extends Component {
     addTracker(id, now) {
 	const {firebase, groups, pendings, trackers} = this.props
 	const pid = pendings.last + 1
+
+	const autoStart = false // FIXME: Maybe automatically start the timer.
 	let update
-	if (groups[id].toggle) {
+	if (autoStart && groups[id].toggle) {
 	    update = stopPendingGroup(pendings, id, now)
 	}
 	else {
@@ -89,7 +91,7 @@ class TrackingGroupList extends Component {
 	update['pendings/last'] = pid
 	update[`pendings/${pid}`] = {id:pid, unit:'s', pending:0,
 				     start: null,
-				     timer: now,
+				     timer: autoStart ? now : null,
 				     base: 0, goal: 0,
 				     group: id}
 
@@ -150,7 +152,9 @@ class TrackingGroupList extends Component {
 		<Tabs key='tabs' index={visibleGroup}
 	    onChange={(index) => dispatch({type: 'VISIBLE_GROUP_SET', group: index })}>
 		{Groups}
-	        <Tab key='add' icon='add_circle_outline' onClick={this.addGroup.bind(this)} />
+	        <Tab key='add' icon='add_circle_outline' onClick={this.addGroup.bind(this)}>
+		Add a tracker group above
+		</Tab>
 		</Tabs>,
 		<Snackbar key='confirm' active={this.state.active} timeout={5000}
 	         action='Yes, delete' label='Are you sure you wish to permanently delete the tracker group?'

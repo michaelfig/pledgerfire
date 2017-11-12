@@ -1,6 +1,6 @@
 {
   "name": "pledgerfire",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "private": true,
   "homepage": ".",
   "dependencies": {
@@ -12,6 +12,7 @@
     "react-inline-css": "^2.3.1",
     "react-redux": "^5.0.6",
     "react-redux-firebase": "^2.0.0-beta.10",
+    "react-router-dom": "^4.2.2",
     "react-scripts": "1.0.11",
     "redux": "^3.7.2"
   },
@@ -29,18 +30,21 @@
   },
   "reactToolbox": {
     "include": [
-	"APP_BAR",
-	"AUTOCOMPLETE",
-	"AVATAR",
+      "APP_BAR",
+      "AUTOCOMPLETE",
+      "AVATAR",
       "BUTTON",
-      "DIALOG",
-      "MENU",
       "CHIP",
       "CARD",
-      "TABS",
-	"INPUT",
-	"SNACKBAR",
-	"SWITCH"
+      "DIALOG",
+      "INPUT",
+      "LAYOUT",
+      "LINK",
+      "MENU",
+      "NAVIGATION",
+      "SNACKBAR",
+      "SWITCH",
+      "TABS"
     ],
     "output": "src/react-toolbox"
   }
