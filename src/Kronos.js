@@ -7,9 +7,30 @@ import Input from 'react-toolbox/lib/input/Input'
 
 // Feature detection from developer.mozilla.org Using the Web Storage API
 const storageAvailable = (type) => {
-    return window[type] // FIXME
+    try {
+	var storage = window[type],
+	      x = '__storage_test__'
+	storage.setItem(x, x)
+	storage.removeItem(x)
+	return storage
+    }
+    catch(e) {
+	return e instanceof DOMException && (
+	    // everything except Firefox
+	    e.code === 22 ||
+		// Firefox
+		e.code === 1014 ||
+		// test name field too, because code might not be present
+		// everything except Firefox
+		e.name === 'QuotaExceededError' ||
+		// Firefox
+		e.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
+	    // acknowledge QuotaExceededError only if there's something already stored
+	    storage.length !== 0
+    }
 }
-const lstorage = storageAvailable('localStorage')
+
+const lstorage = storageAvailable('localStorage') ? window.localStorage : null
 const restore = (vname, deflt) => {
     let val = lstorage ? lstorage.getItem(vname) : null
     return (val !== null) ? val : (deflt === undefined) ? '' : deflt
@@ -23,7 +44,7 @@ const setstore = (vname, val) => {
 }
 
 
-const DEFAULT_URL = 'https://YOURHOST.kronos.net/wfc/applications/wtk/html/ess/quick-ts.jsp'
+const DEFAULT_URL = 'https://YOURHOST.kronos.net/wfc/applications/wtk/html/ess/quick-ts-record.jsp?LOGON_LOCALE_POLICY=1'
 
 export default class Kronos extends Component {
     constructor() {
@@ -32,6 +53,7 @@ export default class Kronos extends Component {
     }
 
     state = {
+	details: false,
 	stampURL: restore('KronosURL', DEFAULT_URL),
 	username: restore('KronosUser'),
 	password: restore('KronosPass'),
@@ -75,16 +97,33 @@ export default class Kronos extends Component {
 	this.setState({password: setstore('KronosPass', value)})
     }
 
+    handleSubmit = (e) => {
+	const c = document.getElementById(this.getUniqueId('clock'))
+	const d = new Date()
+	const zp = (val) => ('0' + val).substr(-2) // Zero-pad.
+	c.value = [d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(),
+		   zp(d.getUTCHours()), zp(d.getUTCMinutes()), zp(d.getUTCSeconds())].join(',')
+	return true
+    }
+
     render() {
-	const DetailNote = lstorage ? 'Details are saved only in local storage.': 'You have no local storage: details will not be saved!'
+	const hide = (val) => (this.state.details ? val : 'hidden')
+	const DetailNote = this.state.details ? lstorage ? <i>Note: Details are saved only in local storage.</i> :
+	      <i>Note: You have no local storage: details will not be saved!</i> : ''
 	return (
-		<form method='POST' target='_blank' action={this.state.stampURL}>
-		<p><i>Note: {DetailNote}</i></p>
-		<Input type='text' label='Kronos Quick Time Stamp URL' onChange={this.handleURL} value={this.state.stampURL} />
-		<Input type='text' label='Username' name='user' onChange={this.handleUser} value={this.state.username} />
-		<Input type='password' label='Password' name='myword' onChange={this.handlePass} value={this.state.password} />
-		<Button raised primary onClick={this.handleStamp} label='Update Stamp' />
-		<Button raised icon='delete' onClick={this.handleReset} label='Reset Details...' />
+		<form method='POST' target='_blank' action={this.state.stampURL} onSubmit={this.handleSubmit}>
+		<input type='hidden' name='LOGON_LOCALE_POLICY' value='1' />
+		<input type='hidden' name='StartIndex' value='0' />
+		<input type='hidden' name='qtsAction' value='Timestamp' />
+		<input type='hidden' id={this.getUniqueId('clock')} name='RunningClock' />
+		<p>{DetailNote}</p>
+		<Input type={hide('text')} label='Kronos Quick Time Stamp Record URL' onChange={this.handleURL} value={this.state.stampURL} />
+		<Input type={hide('text')} label='Username' name='username' onChange={this.handleUser} value={this.state.username} />
+		<Input type={hide('password')} label='Password' name='password' onChange={this.handlePass} value={this.state.password} />
+		<Button raised style={{display: this.state.details ? 'none' : 'inline'}} primary onClick={this.handleStamp} label='Update Stamp' />
+		<Button raised style={{display: this.state.details ? 'none' : 'inline'}} icon='mode_edit' onClick={() => this.setState({details: true})} label='Show Details' />
+		<Button raised style={{display: this.state.details ? 'inline' : 'none'}} primary icon='save' onClick={() => this.setState({details: false})} label='Save Details' />
+		<Button raised style={{display: this.state.details ? 'inline' : 'none'}} icon='delete' onClick={this.handleReset} label='Reset Details...' />
 		<iframe title='Kronos Stamp' id={this.getUniqueId('iframe')} name={this.getUniqueId('iframe')}
 	            style={{leftMargin: '2.5%', visibility: 'hidden'}} width='100%' height='350px' src='blank.html?Submitting Kronos stamp...'>
 		Your browser cannot display the Stamp results.</iframe>
