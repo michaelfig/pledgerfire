@@ -60,12 +60,19 @@ export default class Kronos extends Component {
     }
 
 
-    handleStamp = (e) => {
+    handleAction = (action, e) => {
 	const f = e.target.form
-	const i = document.getElementById(this.getUniqueId('iframe'))
-	if ('src' in i) {
-	    i.style.visibility = 'visible'
-	    f.target = i.name
+	const q = document.getElementById(this.getUniqueId('action'))
+	q.value = action
+	if (action === 'Home') {
+	    f.target = '_blank'
+	}
+	else {
+	    const i = document.getElementById(this.getUniqueId('iframe'))
+	    if ('src' in i) {
+		i.style.visibility = 'visible'
+		f.target = i.name
+	    }
 	}
 	f.submit()
     }
@@ -97,7 +104,7 @@ export default class Kronos extends Component {
 	this.setState({password: setstore('KronosPass', value)})
     }
 
-    handleSubmit = (e) => {
+    handleSubmit = (action, e) => {
 	const c = document.getElementById(this.getUniqueId('clock'))
 	const d = new Date()
 	const zp = (val) => ('0' + val).substr(-2) // Zero-pad.
@@ -114,13 +121,14 @@ export default class Kronos extends Component {
 		<form method='POST' target='_blank' action={this.state.stampURL} onSubmit={this.handleSubmit}>
 		<input type='hidden' name='LOGON_LOCALE_POLICY' value='1' />
 		<input type='hidden' name='StartIndex' value='0' />
-		<input type='hidden' name='qtsAction' value='Timestamp' />
+		<input type='hidden' id={this.getUniqueId('action')} name='qtsAction' value='Timestamp' />
 		<input type='hidden' id={this.getUniqueId('clock')} name='RunningClock' />
 		<p>{DetailNote}</p>
 		<Input type={hide('text')} label='Kronos Quick Time Stamp Record URL' onChange={this.handleURL} value={this.state.stampURL} />
 		<Input type={hide('text')} label='Username' name='username' onChange={this.handleUser} value={this.state.username} />
 		<Input type={hide('password')} label='Password' name='password' onChange={this.handlePass} value={this.state.password} />
-		<Button raised style={{display: this.state.details ? 'none' : 'inline'}} primary onClick={this.handleStamp} label='Update Stamp' />
+		<Button raised style={{display: this.state.details ? 'none' : 'inline'}} primary onClick={this.handleAction.bind(this, 'Timestamp')} label='Update Stamp' />
+		<Button raised style={{display: this.state.details ? 'none' : 'inline'}} onClick={this.handleAction.bind(this, 'Home')} label='Login...' />
 		<Button raised style={{display: this.state.details ? 'none' : 'inline'}} icon='mode_edit' onClick={() => this.setState({details: true})} label='Show Details' />
 		<Button raised style={{display: this.state.details ? 'inline' : 'none'}} primary icon='save' onClick={() => this.setState({details: false})} label='Save Details' />
 		<Button raised style={{display: this.state.details ? 'inline' : 'none'}} icon='delete' onClick={this.handleReset} label='Reset Details...' />
