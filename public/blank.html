@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  </head>
+  <body>
+    <script>
+      var srch = window.location.search.substr(1);
+      var nosp = srch.replace(/\+/g, ' ');
+      document.write(decodeURIComponent(nosp));
+    </script>
+  </body>
+</html>
