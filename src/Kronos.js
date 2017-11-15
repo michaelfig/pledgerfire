@@ -5,6 +5,9 @@ import { enableUniqueIds } from 'react-html-id'
 import Button from 'react-toolbox/lib/button/Button'
 import Input from 'react-toolbox/lib/input/Input'
 
+const DEFAULT_URL = 'https://YOURHOST.kronos.net/wfc/applications/wtk/html/ess/quick-ts-record.jsp?LOGON_LOCALE_POLICY=1'
+const KRONOS_TAB = '_blank'
+
 // Feature detection from developer.mozilla.org Using the Web Storage API
 const storageAvailable = (type) => {
     try {
@@ -44,8 +47,6 @@ const setstore = (vname, val) => {
 }
 
 
-const DEFAULT_URL = 'https://YOURHOST.kronos.net/wfc/applications/wtk/html/ess/quick-ts-record.jsp?LOGON_LOCALE_POLICY=1'
-
 export default class Kronos extends Component {
     constructor() {
 	super()
@@ -65,7 +66,7 @@ export default class Kronos extends Component {
 	const q = document.getElementById(this.getUniqueId('action'))
 	q.value = action
 	if (action === 'Home') {
-	    f.target = '_blank'
+	    f.target = KRONOS_TAB
 	}
 	else {
 	    const i = document.getElementById(this.getUniqueId('iframe'))
@@ -85,7 +86,7 @@ export default class Kronos extends Component {
 	const i = document.getElementById(this.getUniqueId('iframe'))
 	if ('src' in i) {
 	    i.style.visibility = 'hidden'
-	    f.target = '_blank'
+	    f.target = KRONOS_TAB
 	}
 	this.handleURL(DEFAULT_URL, e)
 	this.handleUser('')
@@ -124,7 +125,7 @@ export default class Kronos extends Component {
 	const DetailNote = this.state.details ? lstorage ? <i>Note: Details are saved only in local storage.</i> :
 	      <i>Note: You have no local storage: details will not be saved!</i> : ''
 	return (
-		<form method='POST' target='_blank' action={this.state.stampURL}>
+		<form method='POST' target={KRONOS_TAB} action={this.state.stampURL}>
 		<input type='hidden' name='LOGON_LOCALE_POLICY' value='1' />
 		<input type='hidden' name='StartIndex' value='0' />
 		<input type='hidden' id={this.getUniqueId('action')} name='qtsAction' />
