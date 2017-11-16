@@ -65,6 +65,17 @@ class App extends Component {
 		    <Route path='/kronos' render={(props) => (
 			<Kronos {...props} auth={auth} />
 		    )} />
+		    <Route path='/no-post' render={(props) => (
+			<div>
+			    <h1>Android Chrome PWA form target="_blank" POST bug</h1>
+
+			    <p>The following button should display WeGotPost=true in a new tab, not N/A</p>
+			    <form target="_blank" method="POST" action="https://www.hashemian.com/tools/form-post-tester.php/androidchromenopost">
+			    <input type="hidden" name="WeGotPost" value="true" />
+			    <input type="submit" value="POST, please" />
+			    </form>
+			    </div>
+		    )} />
 		    <Route path='/' render={(props) => (
 			    <div>Unrecognized path {props.location.pathname}</div>
 		    )} />
@@ -79,6 +90,7 @@ class App extends Component {
 		<Link label='Trackers' icon='alarm_on' href='#/tracker' onClick={this.toggleNav} />
 		<Link label='Timesheet' icon='event_note' href='#/timesheet' onClick={this.toggleNav} />
 		<Link label='Kronos' href='#/kronos' onClick={this.toggleNav} />
+		<Link label='Chrome bug' href='#/no-post' onClick={this.toggleNav} />
 		</Navigation>
 		</NavDrawer>
 		<Panel>

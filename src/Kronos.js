@@ -140,7 +140,7 @@ export default class Kronos extends Component {
 		<Button raised style={{display: this.state.details ? 'inline' : 'none'}} primary icon='save' onClick={() => this.setState({details: false})} label='Done' />
 		<Button raised style={{display: this.state.details ? 'inline' : 'none'}} icon='delete' onClick={this.handleReset} label='Reset Details...' />
 		<iframe title='Kronos Stamp' id={this.getUniqueId('iframe')} name={this.getUniqueId('iframe')}
-	            style={{leftMargin: '2.5%', visibility: 'hidden'}} width='100%' height='350px' src='blank.html?Submitting Kronos stamp...'>
+	            style={{leftMargin: '2.5%', visibility: 'hidden'}} width='100%' height='350px'>
 		Your browser cannot display the Stamp results.</iframe>
 		</form>
 	)
