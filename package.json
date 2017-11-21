@@ -1,9 +1,10 @@
 {
   "name": "pledgerfire",
-  "version": "1.3.4",
+  "version": "1.3.5",
   "private": true,
   "homepage": ".",
   "dependencies": {
+    "babel-polyfill": "^6.26.0",
     "firebase": "^4.4.0",
     "firebase-tools": "^3.9.2",
     "firebaseui": "^2.4.0",
