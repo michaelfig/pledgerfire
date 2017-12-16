@@ -49,6 +49,9 @@ class Categories extends Component {
 		      <span onClick={editable ? this.handleEdit.bind(this, cat) : null}>{cat}</span>
 		      </Chip>)
 	}
+	if (!editable) {
+	    return Cats
+	}
 	Cats.push(<Dialog key='d' type='small' active={active}
 		  actions={[{label: 'OK', primary: true, onClick: () => this.updateCat(category, newCategory)},
 			    {label: 'Cancel', onClick: () => this.updateCat(category, null)}

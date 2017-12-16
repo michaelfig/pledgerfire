@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import Tracker from './Tracker'
+
 import {connect} from 'react-redux'
 
 import Button from 'react-toolbox/lib/button/Button'
 import Input from 'react-toolbox/lib/input/Input'
-import Switch from 'react-toolbox/lib/switch/Switch'
 
 
 class AddTrackerButton extends Component {
@@ -42,15 +42,15 @@ class TrackerGroup extends Component {
     }
 
     render() {
-	const {trackers, toggle, onToggle, onDelete, onAddTracker, onDeleteTracker} = this.props
+	const {trackers, onDelete, onAddTracker, onDeleteTracker} = this.props
 	var Trackers = []
 
 	for (const tracker of trackers) {
-	    Trackers.push(<Tracker key={tracker.id} {...tracker} onDelete={(event) => onDeleteTracker(tracker.id, event)} />)
+	    Trackers.push(<Tracker key={tracker.id} {...tracker}
+			  onDelete={(event) => onDeleteTracker(tracker.id, event)} />)
 	}
 	return (<section>
 		<Input label='Group Title' maxLength={20} value={this.state.title} onChange={this.quickChange.bind(this)}/>
-		<Switch checked={toggle} label="Trackers in this group are exclusive" onChange={onToggle} />
 		<ConnectedAdd onClick={onAddTracker} />
 		<Button icon='delete_forever' label='Delete Group...' onClick={onDelete}/>
 		{Trackers}

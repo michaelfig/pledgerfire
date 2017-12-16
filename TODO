@@ -1,0 +1,11 @@
+* Use OT to enable collaborative editing of notes.
+
+* Use Firebase Functions to record time and GPS stamps when entries are logged.
+
+* Within a given tracker, we log the start and stop times and all the
+add/remove times of the categories in that entry.  For reports, "Hard"
+categories use the add/remove times, "Soft" categories use the final
+state of the tracker.
+
+* When we start a tracker, we add all the non-conflicting categories
+of the trackers we toggle.

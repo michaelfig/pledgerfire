@@ -8,8 +8,6 @@ import Tab from 'react-toolbox/lib/tabs/Tab'
 import Tabs from 'react-toolbox/lib/tabs/Tabs'
 import Snackbar from 'react-toolbox/lib/snackbar/Snackbar'
 
-import {stopPendingGroup} from './utils'
-
 class TrackingGroupList extends Component {
     static propTypes = {
 	auth: PropTypes.object.isRequired
@@ -63,35 +61,23 @@ class TrackingGroupList extends Component {
 			      title}
     }
 
-    updateToggle(id, value) {
-	const {firebase} = this.props
-	firebase.updateProfile({[`groups/${id}/toggle`]: value})
-    }
-
     pushTitle(id) {
 	const {firebase} = this.props
 	const {title} = this.newTitles[id]
 	delete this.newTitles[id]
 	firebase.updateProfile({[`groups/${id}/title`]: title})
-    }    
+    }
 
 
     addTracker(id, now) {
 	const {firebase, groups, pendings, trackers} = this.props
 	const pid = pendings.last + 1
 
-	const autoStart = false // FIXME: Maybe automatically start the timer.
-	let update
-	if (autoStart && groups[id].toggle) {
-	    update = stopPendingGroup(pendings, id, now)
-	}
-	else {
-	    update = {}
-	}
+	let update = {}
 	update['pendings/last'] = pid
 	update[`pendings/${pid}`] = {id:pid, unit:'s', pending:0,
 				     start: null,
-				     timer: autoStart ? now : null,
+				     timer: null,
 				     base: 0, goal: 0,
 				     group: id}
 
@@ -118,7 +104,6 @@ class TrackingGroupList extends Component {
 		...update,
 	    [`groups/${gid}/trackers`]: gtrackers,
 	    [`trackers/${tid}`]: null,
-	    [`editTrackers/${tid}`]: null,
 	})
 	this.props.dispatch({type: 'LOCAL_TRACKER_DELETE', id: null})
     }
@@ -152,10 +137,8 @@ class TrackingGroupList extends Component {
 			  }
 	    Groups.push(<Tab key={id} label={group.title}>
 			<TrackerGroup {...group}
-			toggle={groups[id].toggle}
 			onDelete={this.deleteGroup.bind(this, id)}
 			onTitle={this.updateTitle.bind(this, id)}
-			onToggle={this.updateToggle.bind(this, id)}
 			onAddTracker={this.addTracker.bind(this, id)}
 			onDeleteTracker={() => this.props.dispatch({type: 'LOCAL_TRACKER_DELETE', id})} /></Tab>
 		       )

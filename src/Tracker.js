@@ -46,35 +46,64 @@ class Tracker extends Component {
     pushTracker(field) {
 	const {firebase, id} = this.props
 	const value = this.state[field]
-	firebase.updateProfile({[`editTrackers/${id}/${field}`]: value})
+	firebase.updateProfile({[`trackers/${id}/${field}`]: value})
 	this.setState({[field]: null, [field+'.timer']: null})
     }
 
+    prefixRe = /^([^\/]+)/ // eslint-disable-line
+	
     updateCategories(value) {
-	const {firebase, id, allCategories} = this.props
+	const {firebase, id, allCategories, categories} = this.props
 	const cats = {}
 	for (const cat of allCategories) {
 	    cats[cat] = true
 	}
-	for (const cat of value) {
-	    cats[cat] = true
+
+	const priorCats = {}
+	for (const cat of categories) {
+	    priorCats[cat] = true
 	}
-	
-	firebase.updateProfile({[`editTrackers/${id}/categories`]: value,
+
+	const prefix = {}
+	const upCats = {}
+	const newCats = {}
+	for (const cat of value) {
+	    if (cat in priorCats) {
+		// Remove conflicting categories.
+		const match  = cat.match(this.prefixRe)
+		const pfx = match ? match[1] : cat
+		if (pfx in prefix)
+		    delete upCats[prefix[pfx]]
+		prefix[pfx] = cat
+		upCats[cat] = true
+	    }
+	    else {
+		newCats[cat] = true
+	    }
+	}
+
+	// Let the new categories override the old ones.
+	for (const cat in newCats) {
+	    const match  = cat.match(this.prefixRe)
+	    const pfx = match ? match[1] : cat
+	    if (pfx in prefix)
+		delete upCats[prefix[pfx]]
+	    prefix[pfx] = cat
+	    upCats[cat] = true
+	}
+
+	firebase.updateProfile({[`trackers/${id}/categories`]: Object.keys(upCats).sort(),
 				allCategories: Object.keys(cats).sort(),
 			       })
     }
 
 
     render() {
-	const {id, expanded, pendings, editTrackers, allCategories, onDelete} = this.props
+	const {id, expanded, pendings, allCategories, onDelete} = this.props
 	const attrs = {expanded: !!expanded[id]}
 	for (const attr of ['categories', 'title', 'notes']) {
 	    if (attr in this.state && this.state[attr] !== null) {
 		attrs[attr] = this.state[attr]
-	    }
-	    else if (id in editTrackers && attr in editTrackers[id]) {
-		attrs[attr] = editTrackers[id][attr]
 	    }
 	    else {
 		attrs[attr] = this.props[attr]
@@ -103,7 +132,6 @@ class Tracker extends Component {
 
 	const Actions = (attrs.expanded ?
 			 <CardActions>
-			 <Button icon='add' label='Commit' onClick={this.props.onCommit} raised primary />
 			 <Button icon='delete_forever' label='Delete...' onClick={onDelete} raised />
 			 </CardActions> : [])
        
@@ -126,8 +154,7 @@ class Tracker extends Component {
 }
 
 export default firebaseConnect()(connect(
-    ({firebase: {profile: {allCategories, editTrackers}}, local: {expanded}}) =>
+    ({firebase: {profile: {allCategories}}, local: {expanded}}) =>
 	({allCategories: allCategories || [],
-	  editTrackers: editTrackers || {},
 	  expanded})
 )(Tracker))
