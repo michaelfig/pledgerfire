@@ -11,12 +11,14 @@
 		".read": "auth != null && $user_id === auth.uid",
 		"$message_id": {
 		    ".write": "!data.exists() && newData.exists()",
-		    ".validate": "newData.hasChildren(['stamp', 'title', 'user', 'category', 'lat', 'long', 'acc'])",
+		    // Only allow since records if the category matches.
+		    ".validate": "newData.hasChildren(['stamp', 'title', 'user', 'category', 'lat', 'long', 'acc']) && (!newData.hasChild('since') || newData.child('category').val() == root.child('audit').child(auth.uid).child(newData.child('since').val()).child('category').val())",
 		    "stamp": { ".validate": "newData.val() === now" },
 		    "user": { ".validate": "newData.val() === $user_id" },
 		    "title": { ".validate": "newData.isString() && newData.val().length < 256" },
 		    "category": { ".validate": "newData.isString() && newData.val().length < 256" },
-		    "since": { ".validate": "!newData.exists() || (newData.isNumber() && newData.val() < newData.child('stamp').val())" },
+		    // Only allow since records if the prior one doesn't have since.
+		    "since": { ".validate": "!newData.exists() || (!root.child('audit').child(auth.uid).child(newData.val()).child('since').exists())" },
 		    "lat": { ".validate": "newData.isNumber() && newData.val() > -90 && newData.val() < 90" },
 		    "long": { ".validate": "newData.isNumber() && newData.val() > -180 && newData.val() < 180" },
 		    "acc": { ".validate": "newData.isNumber() && newData.val() >= 0" },
