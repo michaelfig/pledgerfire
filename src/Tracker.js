@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
 import {firebaseConnect} from 'react-redux-firebase'
 import Pending from './Pending'
+import {auditLog} from './utils'
 
 import Chip from 'react-toolbox/lib/chip/Chip'
 import Button from 'react-toolbox/lib/button/Button'
@@ -26,6 +27,7 @@ class Tracker extends Component {
     state = {
 	active: false,
     }
+    isRunning = false
 
 
     handleChange(field, value) {
@@ -53,7 +55,7 @@ class Tracker extends Component {
     prefixRe = /^([^\/]+)/ // eslint-disable-line
 	
     updateCategories(value) {
-	const {firebase, id, allCategories, categories} = this.props
+	const {firebase, auth, id, allCategories, categories} = this.props
 	const cats = {}
 	for (const cat of allCategories) {
 	    cats[cat] = true
@@ -72,8 +74,9 @@ class Tracker extends Component {
 		// Remove conflicting categories.
 		const match  = cat.match(this.prefixRe)
 		const pfx = match ? match[1] : cat
-		if (pfx in prefix)
+		if (pfx in prefix) {
 		    delete upCats[prefix[pfx]]
+		}
 		prefix[pfx] = cat
 		upCats[cat] = true
 	    }
@@ -86,15 +89,35 @@ class Tracker extends Component {
 	for (const cat in newCats) {
 	    const match  = cat.match(this.prefixRe)
 	    const pfx = match ? match[1] : cat
-	    if (pfx in prefix)
+	    if (pfx in prefix) {
 		delete upCats[prefix[pfx]]
+	    }
 	    prefix[pfx] = cat
 	    upCats[cat] = true
+	}
+
+	if (this.isRunning) {
+	    auditLog(firebase, auth, priorCats, upCats)
 	}
 
 	firebase.updateProfile({[`trackers/${id}/categories`]: Object.keys(upCats).sort(),
 				allCategories: Object.keys(cats).sort(),
 			       })
+    }
+
+
+    onToggle(started) {
+	const {firebase, auth, categories} = this.props
+	const cats = {}
+	for (const cat of categories) {
+	    cats[cat] = true
+	}
+	if (started) {
+	    auditLog(firebase, auth, {}, cats)
+	}
+	else {
+	    auditLog(firebase, auth, cats)
+	}
     }
 
 
@@ -135,8 +158,12 @@ class Tracker extends Component {
 			 <Button icon='delete_forever' label='Delete...' onClick={onDelete} raised />
 			 </CardActions> : [])
        
+	this.isRunning = false
 	for (const pending of pendings) {
-	    Pendings.push(<Pending key={pending.id} {...pending} />)
+	    Pendings.push(<Pending key={pending.id} onToggle={this.onToggle.bind(this)} {...pending} />)
+	    if (pending.timer) {
+		this.isRunning = true
+	    }
 	}
 	return (
 		<Card>
@@ -154,7 +181,8 @@ class Tracker extends Component {
 }
 
 export default firebaseConnect()(connect(
-    ({firebase: {profile: {allCategories}}, local: {expanded}}) =>
+    ({firebase: {profile: {allCategories}, auth}, local: {expanded}}) =>
 	({allCategories: allCategories || [],
+	  auth,
 	  expanded})
 )(Tracker))

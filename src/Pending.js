@@ -11,6 +11,7 @@ class Pending extends Component {
 	base: PropTypes.number.isRequired,
 	goal: PropTypes.number.isRequired,
 	pending: PropTypes.number.isRequired,
+	onToggle: PropTypes.func.isRequired,
     }
 
     render() {
@@ -20,7 +21,7 @@ class Pending extends Component {
 		  Math.floor(this.props.start.getTime() / 1000) :
 		  this.props.timer
 	    const stopGroup = groups[group].toggle ? group : null
-	    return <TimePending {...{...this.props, pendings, stopGroup, timer}} />
+	    return <TimePending {...{...this.props, group, pendings, stopGroup, timer}} />
 	}
 	else {
 	    throw new Error(`Unrecognized unit ${unit}`)

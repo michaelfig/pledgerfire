@@ -11,19 +11,17 @@
 		".read": "auth != null && $user_id === auth.uid",
 		"$message_id": {
 		    ".write": "!data.exists() && newData.exists()",
-		    // Only allow since records if the category matches.
-		    ".validate": "newData.hasChildren(['stamp', 'title', 'user', 'category', 'lat', 'long', 'acc']) && (!newData.hasChild('since') || newData.child('category').val() == root.child('audit').child(auth.uid).child(newData.child('since').val()).child('category').val())",
+		    ".validate": "newData.hasChildren(['stamp', 'user', 'cat', 'state'])",
 		    "stamp": { ".validate": "newData.val() === now" },
 		    "user": { ".validate": "newData.val() === $user_id" },
-		    "title": { ".validate": "newData.isString() && newData.val().length < 256" },
-		    "category": { ".validate": "newData.isString() && newData.val().length < 256" },
-		    // Only allow since records if the prior one doesn't have since.
-		    "since": { ".validate": "!newData.exists() || (!root.child('audit').child(auth.uid).child(newData.val()).child('since').exists())" },
+		    "cat": { ".validate": "newData.isString() && newData.val().length < 256" },
+		    "state": { ".validate": "newData.isNumber() && newData.val() >= -1 && newData.val() <= 1" },
+		    // Optional GPS coordinates.
 		    "lat": { ".validate": "newData.isNumber() && newData.val() > -90 && newData.val() < 90" },
-		    "long": { ".validate": "newData.isNumber() && newData.val() > -180 && newData.val() < 180" },
+		    "lon": { ".validate": "newData.isNumber() && newData.val() > -180 && newData.val() < 180" },
 		    "acc": { ".validate": "newData.isNumber() && newData.val() >= 0" },
 		    "$other": { ".validate": false },
-		    ".indexOn": ["stamp"]
+		    ".indexOn": ["stamp", "cat"]
 		}
 	    }
 	}

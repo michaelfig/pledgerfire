@@ -20,6 +20,7 @@ class TimePending extends Component {
 	now: PropTypes.number.isRequired,
 	base: PropTypes.number.isRequired,
 	goal: PropTypes.number.isRequired,
+	onToggle: PropTypes.func.isRequired,
     }
 
 
@@ -28,8 +29,9 @@ class TimePending extends Component {
     }
 
     toggleRunning() {
-	const {firebase, timer, id, stopGroup, now, pending, pendings} = this.props
+	const {firebase, timer, id, stopGroup, now, pending, pendings, onToggle} = this.props
 	if (!timer) {
+	    onToggle(true);
 	    let updates
 	    if (stopGroup)
 		updates = stopPendingGroup(pendings, stopGroup, now)
@@ -41,6 +43,7 @@ class TimePending extends Component {
 				   })
 	}
 	else {
+	    onToggle(false);
 	    firebase.updateProfile({[`pendings/${id}/pending`]: (now - timer) + pending,
 				    [`pendings/${id}/start`]: null,
 				    [`pendings/${id}/timer`]: null,
