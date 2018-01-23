@@ -1,21 +1,21 @@
 {
   "name": "pledgerfire",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "private": true,
   "homepage": ".",
   "dependencies": {
     "babel-polyfill": "^6.26.0",
-    "firebase": "^4.4.0",
+    "firebase": "^4.9.0",
     "firebase-tools": "^3.9.2",
-    "firebaseui": "^2.4.0",
-    "react": "^16.0.0",
-    "react-dom": "^16.0.0",
+    "firebaseui": "^2.5.1",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
     "react-html-id": "^0.1.1",
     "react-inline-css": "^2.3.1",
     "react-redux": "^5.0.6",
-    "react-redux-firebase": "^2.0.0-beta.10",
+    "react-redux-firebase": "^2.0.2",
     "react-router-dom": "^4.2.2",
-    "react-scripts": "1.0.11",
+    "react-scripts": "^1.1.0",
     "redux": "^3.7.2"
   },
   "scripts": {
